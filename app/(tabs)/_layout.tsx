@@ -2,10 +2,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import React from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useData } from '../../context/DataContext';
 import { useAppTheme } from '../../context/ThemeContext';
 
 export default function TabLayout() {
   const { theme } = useAppTheme();
+  const { isDashboardEditing } = useData();
   const insets = useSafeAreaInsets();
 
   const bottomInset = Math.max(insets.bottom, 12);
@@ -16,14 +18,16 @@ export default function TabLayout() {
         headerShown: false,
         tabBarActiveTintColor: theme.colors.primary,
         tabBarInactiveTintColor: theme.colors.textMuted,
-        tabBarStyle: {
-          backgroundColor: theme.colors.surface,
-          borderTopColor: theme.colors.border,
-          borderTopWidth: 1,
-          height: 56 + bottomInset,
-          paddingBottom: bottomInset,
-          paddingTop: 8,
-        },
+        tabBarStyle: isDashboardEditing
+          ? { display: 'none' }
+          : {
+              backgroundColor: theme.colors.surface,
+              borderTopColor: theme.colors.border,
+              borderTopWidth: 1,
+              height: 56 + bottomInset,
+              paddingBottom: bottomInset,
+              paddingTop: 8,
+            },
         tabBarLabelStyle: {
           fontSize: 11,
           fontFamily: theme.fonts?.semiBold || theme.fonts?.bold,

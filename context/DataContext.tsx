@@ -3,7 +3,7 @@ import { CURRENCIES } from '../constants/currencies';
 import { calculatePredictiveInsights } from '../services/insights';
 import { getInitialProfile, StorageService } from '../services/storage';
 import { isSupabaseConfigured, supabase } from '../services/supabase';
-import { DashboardWidgetConfig, WidgetSlotSize } from '../types/dashboard';
+import { DashboardWidgetConfig, WidgetSlotSize, isSizeAllowed, getAllowedSizes } from '../types/dashboard';
 import {
   AllowanceCycle,
   Category,
@@ -21,6 +21,8 @@ interface DataContextType {
   categories: Category[];
   goals: SavingsGoal[];
   widgets: DashboardWidgetConfig[];
+  isDashboardEditing: boolean;
+  setIsDashboardEditing: (editing: boolean) => void;
   profile: UserProfile;
   predictiveInsights: PredictiveInsights;
   formatMoney: (amount: number) => string;
@@ -51,6 +53,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [categories, setCategories] = useState<Category[]>([]);
   const [goals, setGoals] = useState<SavingsGoal[]>([]);
   const [widgets, setWidgets] = useState<DashboardWidgetConfig[]>([]);
+  const [isDashboardEditing, setIsDashboardEditing] = useState(false);
   const [profile, setProfile] = useState<UserProfile>(getInitialProfile);
   const [isSyncing, setIsSyncing] = useState(false);
 
@@ -65,11 +68,18 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         StorageService.loadProfile(),
       ]);
 
+      const normalizedWidgets = (w || []).map((widget) => {
+        if (!isSizeAllowed(widget.type, widget.slotSize)) {
+          return { ...widget, slotSize: getAllowedSizes(widget.type)[0] };
+        }
+        return widget;
+      });
+
       setCycle(c);
       setExpenses(e);
       setCategories(cat);
       setGoals(g);
-      setWidgets(w);
+      setWidgets(normalizedWidgets);
       setProfile(p);
       setIsLoaded(true);
     }
@@ -300,7 +310,13 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const updateWidgetSlotSize = async (id: string, slotSize: WidgetSlotSize) => {
-    const updated = widgets.map((w) => (w.id === id ? { ...w, slotSize } : w));
+    const updated = widgets.map((w) => {
+      if (w.id === id) {
+        const finalSize = isSizeAllowed(w.type, slotSize) ? slotSize : w.slotSize;
+        return { ...w, slotSize: finalSize };
+      }
+      return w;
+    });
     setWidgets(updated);
     await StorageService.saveWidgets(updated);
   };
@@ -398,6 +414,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         categories,
         goals,
         widgets,
+        isDashboardEditing,
+        setIsDashboardEditing,
         profile,
         predictiveInsights,
         formatMoney,

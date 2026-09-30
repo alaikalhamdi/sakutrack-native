@@ -13,8 +13,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useData } from '../../context/DataContext';
 import { useAppTheme } from '../../context/ThemeContext';
 import { Text } from '../common/AppText';
-import { WidgetSlotSize } from '../../types/dashboard';
+import { WidgetSlotSize, isSizeAllowed } from '../../types/dashboard';
 import { Button } from '../common/Button';
+import { SizeOptionGlyph, WidgetCardPreview } from './WidgetPreview';
 
 interface WidgetDrawerModalProps {
   visible: boolean;
@@ -73,7 +74,7 @@ export const WidgetDrawerModal: React.FC<WidgetDrawerModalProps> = ({ visible, o
                   Dashboard Card Catalog 🗂️
                 </Text>
                 <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>
-                  Customize visibility and card size (1x1, 2x1, 2x2)
+                  Customize visibility, preview cards & choose sizes
                 </Text>
               </View>
 
@@ -119,7 +120,7 @@ export const WidgetDrawerModal: React.FC<WidgetDrawerModalProps> = ({ visible, o
                         />
                       </View>
 
-                      {/* Size Picker Pills */}
+                      {/* Size Picker Pills with Size Option Preview Glyphs */}
                       <View style={styles.sizePickerRow}>
                         <Text style={[styles.sizeLabel, { color: theme.colors.textMuted }]}>
                           Size:
@@ -127,38 +128,67 @@ export const WidgetDrawerModal: React.FC<WidgetDrawerModalProps> = ({ visible, o
                         <View style={styles.sizePills}>
                           {SLOT_SIZES.map((size) => {
                             const isSelected = w.slotSize === size;
+                            const isAllowed = isSizeAllowed(w.type, size);
+
                             return (
                               <TouchableOpacity
                                 key={size}
-                                onPress={() => handleSizeChange(w.id, size)}
+                                disabled={!isAllowed}
+                                onPress={() => isAllowed && handleSizeChange(w.id, size)}
                                 style={[
                                   styles.sizePill,
                                   {
                                     backgroundColor: isSelected
                                       ? theme.colors.primary
-                                      : 'rgba(0,0,0,0.06)',
+                                      : isAllowed
+                                      ? 'rgba(0,0,0,0.05)'
+                                      : 'transparent',
                                     borderColor: isSelected
                                       ? theme.colors.primary
-                                      : theme.colors.border,
+                                      : isAllowed
+                                      ? theme.colors.border
+                                      : 'rgba(0,0,0,0.08)',
+                                    opacity: isAllowed ? 1 : 0.4,
                                   },
                                 ]}
                               >
+                                <SizeOptionGlyph
+                                  size={size}
+                                  isActive={isSelected}
+                                  isDisabled={!isAllowed}
+                                  theme={theme}
+                                />
                                 <Text
                                   style={[
                                     styles.sizePillText,
                                     {
-                                      color: isSelected ? '#FFFFFF' : theme.colors.textSecondary,
+                                      color: isSelected
+                                        ? '#FFFFFF'
+                                        : isAllowed
+                                        ? theme.colors.textSecondary
+                                        : theme.colors.textMuted,
                                       fontWeight: isSelected ? '800' : '600',
                                     },
                                   ]}
                                 >
                                   {size}
                                 </Text>
+                                {!isAllowed && (
+                                  <Ionicons name="lock-closed" size={9} color={theme.colors.textMuted} />
+                                )}
                               </TouchableOpacity>
                             );
                           })}
                         </View>
                       </View>
+
+                      {/* Card Miniature Preview */}
+                      <WidgetCardPreview
+                        type={w.type}
+                        size={w.slotSize}
+                        title={w.title}
+                        theme={theme}
+                      />
                     </View>
                   </View>
                 ))}
@@ -215,11 +245,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   scroll: {
-    maxHeight: 440,
+    maxHeight: 520,
   },
   list: {
-    gap: 10,
-    paddingBottom: 16,
+    gap: 12,
+    paddingBottom: 20,
   },
   itemRow: {
     padding: 14,
@@ -231,7 +261,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 8,
   },
   itemTitle: {
     fontSize: 14,
@@ -257,10 +287,14 @@ const styles = StyleSheet.create({
   sizePills: {
     flexDirection: 'row',
     gap: 6,
+    flexWrap: 'wrap',
   },
   sizePill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
     paddingHorizontal: 8,
-    paddingVertical: 3,
+    paddingVertical: 4,
     borderRadius: 6,
     borderWidth: 1,
   },

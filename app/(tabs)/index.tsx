@@ -14,64 +14,79 @@ import { AddExpenseModal } from '../../components/expenses/AddExpenseModal';
 import { AllowanceCycleModal } from '../../components/expenses/AllowanceCycleModal';
 import { EditExpenseModal } from '../../components/expenses/EditExpenseModal';
 import { ThemeCustomizerModal } from '../../components/theme/ThemeCustomizerModal';
+import { useData } from '../../context/DataContext';
 import { useAppTheme } from '../../context/ThemeContext';
 import { Expense } from '../../types/expense';
 
 export default function DashboardScreen() {
   const router = useRouter();
   const { theme } = useAppTheme();
+  const { isDashboardEditing, setIsDashboardEditing } = useData();
 
   const [themeModalVisible, setThemeModalVisible] = useState(false);
   const [addExpenseVisible, setAddExpenseVisible] = useState(false);
   const [cycleModalVisible, setCycleModalVisible] = useState(false);
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
-  const [isEditMode, setIsEditMode] = useState(false);
+  const [drawerVisible, setDrawerVisible] = useState(false);
+  const [scrollEnabled, setScrollEnabled] = useState(true);
 
   return (
     <SafeAreaView
       edges={['top', 'left', 'right']}
       style={[styles.safeArea, { backgroundColor: theme.colors.background }]}
     >
-      {/* App Header */}
+      {/* App Header (Retracts brand & greeting when in edit mode) */}
       <Header
         onOpenThemeModal={() => setThemeModalVisible(true)}
-        isEditMode={isEditMode}
-        onToggleEditMode={() => setIsEditMode(!isEditMode)}
+        isEditMode={isDashboardEditing}
+        onToggleEditMode={() => setIsDashboardEditing(!isDashboardEditing)}
+        onOpenCatalogue={() => setDrawerVisible(true)}
       />
 
       {/* Main Draggable Dashboard Body */}
       <ScrollView
+        scrollEnabled={scrollEnabled}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[
+          styles.scrollContent,
+          isDashboardEditing && styles.scrollContentEditing,
+        ]}
       >
         <DraggableDashboard
-          isEditMode={isEditMode}
-          onToggleEditMode={() => setIsEditMode(!isEditMode)}
+          isEditMode={isDashboardEditing}
+          onToggleEditMode={() => setIsDashboardEditing(!isDashboardEditing)}
           onOpenAddExpense={() => setAddExpenseVisible(true)}
           onOpenExpensesTab={() => router.push('/(tabs)/expenses')}
           onOpenGoalsTab={() => router.push('/(tabs)/goals')}
           onOpenCycleModal={() => setCycleModalVisible(true)}
           onEditExpense={setEditingExpense}
+          onDragStart={() => setScrollEnabled(false)}
+          onDragEnd={() => setScrollEnabled(true)}
+          drawerVisible={drawerVisible}
+          onOpenDrawer={() => setDrawerVisible(true)}
+          onCloseDrawer={() => setDrawerVisible(false)}
         />
       </ScrollView>
 
-      {/* Floating Action Button (FAB) */}
-      <TouchableOpacity
-        activeOpacity={0.8}
-        onPress={() => setAddExpenseVisible(true)}
-        style={[
-          styles.fab,
-          {
-            backgroundColor: theme.colors.primary,
-            borderColor: theme.colors.border,
-            borderWidth: theme.borderWidth > 0 ? 1.5 : 0,
-            shadowColor: theme.colors.primary,
-          },
-        ]}
-      >
-        <Ionicons name="add" size={26} color="#FFFFFF" />
-        <Text style={styles.fabText}>Log Saku</Text>
-      </TouchableOpacity>
+      {/* Floating Action Button (FAB) - Hidden during editing */}
+      {!isDashboardEditing && (
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={() => setAddExpenseVisible(true)}
+          style={[
+            styles.fab,
+            {
+              backgroundColor: theme.colors.primary,
+              borderColor: theme.colors.border,
+              borderWidth: theme.borderWidth > 0 ? 1.5 : 0,
+              shadowColor: theme.colors.primary,
+            },
+          ]}
+        >
+          <Ionicons name="add" size={26} color="#FFFFFF" />
+          <Text style={styles.fabText}>Log Saku</Text>
+        </TouchableOpacity>
+      )}
 
       {/* Theme Customizer Studio */}
       <ThemeCustomizerModal
@@ -108,6 +123,9 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingTop: 4,
     paddingBottom: 110,
+  },
+  scrollContentEditing: {
+    paddingBottom: 36,
   },
   fab: {
     position: 'absolute',
