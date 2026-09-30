@@ -1,0 +1,60 @@
+import { DashboardWidgetConfig } from '../types/dashboard';
+
+export const DEFAULT_WIDGETS: DashboardWidgetConfig[] = [
+  {
+    id: 'w1',
+    type: 'safe_to_spend',
+    title: 'Daily Safe-to-Spend',
+    slotSize: '1x1',
+    isVisible: true,
+    order: 0,
+  },
+  {
+    id: 'w2',
+    type: 'spending_summary',
+    title: 'Spend Counter',
+    slotSize: '1x1',
+    isVisible: true,
+    order: 1,
+  },
+  {
+    id: 'w3',
+    type: 'burnout_runway',
+    title: 'Allowance Runway & Broke Meter',
+    slotSize: '2x1',
+    isVisible: true,
+    order: 2,
+  },
+  {
+    id: 'w4',
+    type: 'quick_add_launcher',
+    title: 'Quick Log Saku',
+    slotSize: '2x1',
+    isVisible: true,
+    order: 3,
+  },
+  {
+    id: 'w5',
+    type: 'savings_carousel',
+    title: 'My Savings Goals',
+    slotSize: '2x1',
+    isVisible: true,
+    order: 4,
+  },
+  {
+    id: 'w6',
+    type: 'category_donut',
+    title: 'Where Money Goes',
+    slotSize: '2x2',
+    isVisible: true,
+    order: 5,
+  },
+  {
+    id: 'w7',
+    type: 'recent_transactions',
+    title: 'Recent Expenses',
+    slotSize: '2x2',
+    isVisible: true,
+    order: 6,
+  },
+];
