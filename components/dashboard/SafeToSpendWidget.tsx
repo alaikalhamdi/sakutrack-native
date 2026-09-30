@@ -1,10 +1,10 @@
-import { Ionicons } from '@expo/vector-icons';
-import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import { useData } from '../../context/DataContext';
-import { useAppTheme } from '../../context/ThemeContext';
-import { Text } from '../common/AppText';
-import { Card } from '../common/Card';
+import { Ionicons } from "@expo/vector-icons";
+import React from "react";
+import { StyleSheet, View } from "react-native";
+import { useData } from "../../context/DataContext";
+import { useAppTheme } from "../../context/ThemeContext";
+import { Text } from "../common/AppText";
+import { Card } from "../common/Card";
 
 export const SafeToSpendWidget: React.FC = () => {
   const { theme } = useAppTheme();
@@ -25,7 +25,6 @@ export const SafeToSpendWidget: React.FC = () => {
             DAILY SAFE-TO-SPEND
           </Text>
         </View>
-        <Text style={styles.emoji}>🛡️</Text>
       </View>
 
       <Text
@@ -39,7 +38,7 @@ export const SafeToSpendWidget: React.FC = () => {
           },
         ]}
       >
-        {cycle ? formatMoney(safeAmount) : '—'}
+        {cycle ? formatMoney(safeAmount) : "—"}
       </Text>
 
       <Text
@@ -47,7 +46,9 @@ export const SafeToSpendWidget: React.FC = () => {
         ellipsizeMode="tail"
         style={[styles.subtitle, { color: theme.colors.textMuted }]}
       >
-        {cycle ? 'Safe daily limit to survive cycle' : 'Requires active allowance'}
+        {cycle
+          ? "Safe daily limit to survive cycle"
+          : "Requires active allowance"}
       </Text>
     </Card>
   );
@@ -57,24 +58,24 @@ const styles = StyleSheet.create({
   card: {
     flex: 1,
     minHeight: 120,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
   },
   topRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     gap: 4,
   },
   titleWrap: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 4,
     flex: 1,
     flexShrink: 1,
   },
   title: {
     fontSize: 10,
-    fontWeight: '700',
+    fontWeight: "700",
     letterSpacing: 0.5,
     flexShrink: 1,
   },
@@ -84,11 +85,11 @@ const styles = StyleSheet.create({
   },
   amount: {
     fontSize: 22,
-    fontWeight: '800',
+    fontWeight: "800",
     marginVertical: 4,
   },
   subtitle: {
     fontSize: 11,
-    fontWeight: '500',
+    fontWeight: "500",
   },
 });
