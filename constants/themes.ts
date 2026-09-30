@@ -1,4 +1,5 @@
 import { ThemeConfig, ThemePresetId } from '../types/theme';
+import { FONT_DEFINITIONS } from './typography';
 
 export const THEME_PRESETS: Record<ThemePresetId, ThemeConfig> = {
   matcha: {
@@ -21,6 +22,7 @@ export const THEME_PRESETS: Record<ThemePresetId, ThemeConfig> = {
       cardGlow: 'rgba(106, 153, 78, 0.15)',
     },
     fontStyle: 'playful',
+    fonts: FONT_DEFINITIONS.playful,
     borderStyle: 'rounded',
     borderRadius: 18,
     borderWidth: 1,
@@ -46,6 +48,7 @@ export const THEME_PRESETS: Record<ThemePresetId, ThemeConfig> = {
       cardGlow: 'rgba(255, 87, 34, 0.25)',
     },
     fontStyle: 'mono',
+    fonts: FONT_DEFINITIONS.mono,
     borderStyle: 'sharp',
     borderRadius: 6,
     borderWidth: 2,
@@ -71,6 +74,7 @@ export const THEME_PRESETS: Record<ThemePresetId, ThemeConfig> = {
       cardGlow: 'rgba(0, 240, 255, 0.2)',
     },
     fontStyle: 'modern',
+    fonts: FONT_DEFINITIONS.modern,
     borderStyle: 'rounded',
     borderRadius: 16,
     borderWidth: 1.5,
@@ -96,6 +100,7 @@ export const THEME_PRESETS: Record<ThemePresetId, ThemeConfig> = {
       cardGlow: 'rgba(59, 130, 246, 0.08)',
     },
     fontStyle: 'modern',
+    fonts: FONT_DEFINITIONS.modern,
     borderStyle: 'rounded',
     borderRadius: 12,
     borderWidth: 1,

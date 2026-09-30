@@ -1,8 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useData } from '../../context/DataContext';
 import { useAppTheme } from '../../context/ThemeContext';
+import { Text } from './AppText';
 import { Badge } from './Badge';
 
 interface HeaderProps {
@@ -16,7 +17,7 @@ export const Header: React.FC<HeaderProps> = ({
   isEditMode,
   onToggleEditMode,
 }) => {
-  const { theme } = useAppTheme();
+  const { theme, getFont } = useAppTheme();
   const { profile, predictiveInsights } = useData();
 
   return (
@@ -49,7 +50,7 @@ export const Header: React.FC<HeaderProps> = ({
               styles.appName,
               {
                 color: theme.colors.text,
-                fontFamily: theme.fontStyle === 'mono' ? 'Courier' : undefined,
+                fontFamily: getFont('bold'),
               },
             ]}
           >
@@ -110,7 +111,11 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Sub Row: Greeting & Broke-Meter Status */}
       <View style={styles.subRow}>
-        <Text style={[styles.greeting, { color: theme.colors.textSecondary }]}>
+        <Text
+          numberOfLines={1}
+          ellipsizeMode="tail"
+          style={[styles.greeting, { color: theme.colors.textSecondary, flex: 1, marginRight: 8 }]}
+        >
           Hi, <Text style={{ fontWeight: '700', color: theme.colors.text }}>{profile?.displayName || 'Student'}</Text>! 👋
         </Text>
 
@@ -120,6 +125,7 @@ export const Header: React.FC<HeaderProps> = ({
           color={predictiveInsights.brokeStatus.color}
           backgroundColor={theme.colors.surfaceSubtle}
           size="sm"
+          style={{ flexShrink: 0, alignSelf: 'center' }}
         />
       </View>
     </View>
@@ -160,6 +166,7 @@ const styles = StyleSheet.create({
   },
   streakBadge: {
     marginLeft: 2,
+    alignSelf: 'center',
   },
   actionsGroup: {
     flexDirection: 'row',

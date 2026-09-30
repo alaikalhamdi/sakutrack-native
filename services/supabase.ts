@@ -15,10 +15,27 @@ export const isSupabaseConfigured = Boolean(
     !supabaseUrl.includes('demo-sakutrack')
 );
 
+const isSSR = typeof window === 'undefined';
+
+const authStorage = {
+  getItem: (key: string) => {
+    if (isSSR) return null;
+    return AsyncStorage.getItem(key);
+  },
+  setItem: (key: string, value: string) => {
+    if (isSSR) return;
+    return AsyncStorage.setItem(key, value);
+  },
+  removeItem: (key: string) => {
+    if (isSSR) return;
+    return AsyncStorage.removeItem(key);
+  },
+};
+
 export const supabase = createClient<Database>(supabaseUrl, supabaseKey, {
   auth: {
-    storage: AsyncStorage,
-    autoRefreshToken: true,
+    storage: authStorage,
+    autoRefreshToken: typeof window !== 'undefined',
     persistSession: true,
     detectSessionInUrl: false,
   },

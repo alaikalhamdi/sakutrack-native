@@ -6,8 +6,6 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
-  Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -15,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../../context/AuthContext';
 import { useData } from '../../context/DataContext';
 import { useAppTheme } from '../../context/ThemeContext';
+import { Text, TextInput } from '../common/AppText';
 import { Button } from '../common/Button';
 
 interface AuthModalProps {
@@ -99,7 +98,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ visible, onClose }) => {
                     styles.title,
                     {
                       color: theme.colors.text,
-                      fontFamily: theme.fontStyle === 'mono' ? 'Courier' : undefined,
+                      fontFamily: theme.fonts?.bold,
                     },
                   ]}
                 >
@@ -234,7 +233,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ visible, onClose }) => {
                       <TextInput
                         value={username}
                         onChangeText={setUsername}
-                        placeholder="e.g. boba_warrior"
+                        placeholder="e.g. saku_student"
                         placeholderTextColor={theme.colors.textMuted}
                         style={[
                           styles.input,

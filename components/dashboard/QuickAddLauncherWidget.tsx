@@ -1,9 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useData } from '../../context/DataContext';
 import { useAppTheme } from '../../context/ThemeContext';
+import { Text } from '../common/AppText';
 import { Card } from '../common/Card';
 
 interface QuickAddProps {
@@ -18,14 +19,14 @@ export const QuickAddLauncherWidget: React.FC<QuickAddProps> = ({ onOpenFullModa
 
   const quickItems = isUSD
     ? [
-        { title: '☕ Coffee', amount: 5.5, cat: 'food_boba' },
-        { title: '🍔 Campus Lunch', amount: 12.0, cat: 'food_boba' },
+        { title: '☕ Coffee', amount: 5.5, cat: 'food_drinks' },
+        { title: '🍔 Campus Lunch', amount: 12.0, cat: 'food_drinks' },
         { title: '🚌 Transit', amount: 3.5, cat: 'transport' },
         { title: '📚 Print / Study', amount: 4.0, cat: 'campus_books' },
       ]
     : [
-        { title: '🧋 Boba / Kopi', amount: 25000, cat: 'food_boba' },
-        { title: '🍛 Makan Siang', amount: 25000, cat: 'food_boba' },
+        { title: '☕ Kopi / Teh', amount: 20000, cat: 'food_drinks' },
+        { title: '🍛 Makan Siang', amount: 25000, cat: 'food_drinks' },
         { title: '🛵 Ojol / Transit', amount: 15000, cat: 'transport' },
         { title: '📄 Fotokopi / Print', amount: 10000, cat: 'campus_books' },
       ];
@@ -42,7 +43,6 @@ export const QuickAddLauncherWidget: React.FC<QuickAddProps> = ({ onOpenFullModa
       title: item.title,
       amount: item.amount,
       spentAt: new Date().toISOString(),
-      isImpulse: false,
     });
   };
 
@@ -51,7 +51,11 @@ export const QuickAddLauncherWidget: React.FC<QuickAddProps> = ({ onOpenFullModa
       <View style={styles.topRow}>
         <View style={styles.titleWrap}>
           <Ionicons name="flash-outline" size={16} color={theme.colors.accent} />
-          <Text style={[styles.title, { color: theme.colors.textSecondary }]}>
+          <Text
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            style={[styles.title, { color: theme.colors.textSecondary }]}
+          >
             SPEED LOG (ONE-TAP)
           </Text>
         </View>
@@ -108,11 +112,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
+    flex: 1,
+    flexShrink: 1,
+    marginRight: 8,
   },
   title: {
     fontSize: 10,
     fontWeight: '700',
     letterSpacing: 0.5,
+    flexShrink: 1,
   },
   customBtn: {
     flexDirection: 'row',
@@ -121,6 +129,7 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
     borderRadius: 8,
     gap: 2,
+    flexShrink: 0,
   },
   customBtnText: {
     fontSize: 11,

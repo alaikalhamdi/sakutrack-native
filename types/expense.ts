@@ -32,7 +32,6 @@ export interface Expense {
   amount: number;
   spentAt: string; // ISO date timestamp
   note?: string;
-  isImpulse?: boolean;
 }
 
 export interface SavingsGoal {

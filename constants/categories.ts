@@ -2,8 +2,8 @@ import { Category } from '../types/expense';
 
 export const DEFAULT_CATEGORIES: Category[] = [
   {
-    id: 'food_boba',
-    name: 'Food & Boba',
+    id: 'food_drinks',
+    name: 'Food & Drinks',
     icon: 'fast-food',
     color: '#FF70A6',
   },

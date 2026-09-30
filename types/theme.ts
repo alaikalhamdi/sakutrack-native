@@ -21,6 +21,13 @@ export interface ThemeColors {
   cardGlow?: string;
 }
 
+export interface ThemeFonts {
+  regular: string;
+  medium: string;
+  semiBold: string;
+  bold: string;
+}
+
 export interface ThemeConfig {
   id: ThemePresetId | 'custom';
   name: string;
@@ -30,4 +37,5 @@ export interface ThemeConfig {
   borderRadius: number; // e.g. 4 for sharp, 16 for rounded, 28 for pill
   borderWidth: number; // e.g. 0, 1, or 2 (retro)
   isDark: boolean;
+  fonts?: ThemeFonts;
 }

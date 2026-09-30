@@ -8,14 +8,13 @@ import {
   ScrollView,
   StyleSheet,
   Switch,
-  Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useData } from '../../context/DataContext';
 import { useAppTheme } from '../../context/ThemeContext';
+import { Text, TextInput } from '../common/AppText';
 import { Button } from '../common/Button';
 
 interface AddGoalModalProps {
@@ -94,7 +93,7 @@ export const AddGoalModal: React.FC<AddGoalModalProps> = ({ visible, onClose }) 
                     styles.title,
                     {
                       color: theme.colors.text,
-                      fontFamily: theme.fontStyle === 'mono' ? 'Courier' : undefined,
+                      fontFamily: theme.fonts?.bold,
                     },
                   ]}
                 >
@@ -166,7 +165,7 @@ export const AddGoalModal: React.FC<AddGoalModalProps> = ({ visible, onClose }) 
                       backgroundColor: theme.colors.surfaceSubtle,
                       borderColor: theme.colors.border,
                       borderRadius: Math.min(theme.borderRadius, 14),
-                      fontFamily: theme.fontStyle === 'mono' ? 'Courier' : undefined,
+                      fontFamily: theme.fonts?.bold,
                     },
                   ]}
                 />

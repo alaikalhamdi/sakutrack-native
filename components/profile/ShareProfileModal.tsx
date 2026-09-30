@@ -8,7 +8,6 @@ import {
   Modal,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -16,6 +15,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { captureRef } from 'react-native-view-shot';
 import { useData } from '../../context/DataContext';
 import { useAppTheme } from '../../context/ThemeContext';
+import { Text } from '../common/AppText';
 import { Button } from '../common/Button';
 import { ShareableCardView } from './ShareableCardView';
 
@@ -93,7 +93,7 @@ export const ShareProfileModal: React.FC<ShareProfileModalProps> = ({ visible, o
                     styles.title,
                     {
                       color: theme.colors.text,
-                      fontFamily: theme.fontStyle === 'mono' ? 'Courier' : undefined,
+                      fontFamily: theme.fonts?.bold,
                     },
                   ]}
                 >

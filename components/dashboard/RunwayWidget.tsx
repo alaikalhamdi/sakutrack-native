@@ -1,12 +1,17 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useData } from '../../context/DataContext';
 import { useAppTheme } from '../../context/ThemeContext';
+import { Text } from '../common/AppText';
 import { Badge } from '../common/Badge';
 import { Card } from '../common/Card';
 
-export const RunwayWidget: React.FC = () => {
+interface RunwayWidgetProps {
+  onOpenCycleModal?: () => void;
+}
+
+export const RunwayWidget: React.FC<RunwayWidgetProps> = ({ onOpenCycleModal }) => {
   const { theme } = useAppTheme();
   const { cycle, predictiveInsights, formatMoney } = useData();
 
@@ -18,8 +23,56 @@ export const RunwayWidget: React.FC = () => {
     isBurnoutEarly,
   } = predictiveInsights;
 
+  if (!cycle) {
+    return (
+      <Card style={styles.card}>
+        <View style={styles.headerRow}>
+          <View style={styles.titleWrap}>
+            <Ionicons name="speedometer-outline" size={16} color={theme.colors.accent} />
+            <Text
+              numberOfLines={1}
+              ellipsizeMode="tail"
+              style={[styles.title, { color: theme.colors.textSecondary }]}
+            >
+              ALLOWANCE RUNWAY & BROKE-METER
+            </Text>
+          </View>
+        </View>
+
+        <View style={styles.emptyContainer}>
+          <Ionicons name="wallet-outline" size={32} color={theme.colors.accent} />
+          <Text
+            style={[
+              styles.emptyTitle,
+              { color: theme.colors.text, fontFamily: theme.fonts?.bold },
+            ]}
+          >
+            No Allowance Budget Set
+          </Text>
+          <Text style={[styles.emptySubtitle, { color: theme.colors.textSecondary }]}>
+            Set your weekly or monthly pocket money to activate the broke-meter and daily
+            safe-to-spend forecast.
+          </Text>
+
+          {onOpenCycleModal && (
+            <TouchableOpacity
+              onPress={onOpenCycleModal}
+              style={[styles.setupBtn, { backgroundColor: theme.colors.primary }]}
+            >
+              <Ionicons name="add-circle-outline" size={16} color="#FFF" />
+              <Text style={styles.setupBtnText}>Set Allowance Plan</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      </Card>
+    );
+  }
+
   const totalCycleAmount = cycle?.amount || 1;
-  const percentRemaining = Math.max(0, Math.min(100, (remainingAllowance / totalCycleAmount) * 100));
+  const percentRemaining = Math.max(
+    0,
+    Math.min(100, (remainingAllowance / totalCycleAmount) * 100)
+  );
 
   return (
     <Card style={styles.card}>
@@ -27,32 +80,51 @@ export const RunwayWidget: React.FC = () => {
       <View style={styles.headerRow}>
         <View style={styles.titleWrap}>
           <Ionicons name="speedometer-outline" size={16} color={theme.colors.accent} />
-          <Text style={[styles.title, { color: theme.colors.textSecondary }]}>
+          <Text
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            style={[styles.title, { color: theme.colors.textSecondary }]}
+          >
             ALLOWANCE RUNWAY & BROKE-METER
           </Text>
         </View>
 
-        <Badge
-          label={brokeStatus.title}
-          icon={<Text style={{ fontSize: 13 }}>{brokeStatus.emoji}</Text>}
-          color={brokeStatus.color}
-          backgroundColor={theme.colors.surfaceSubtle}
-          size="sm"
-        />
+        <View style={styles.headerRight}>
+          <Badge
+            label={brokeStatus.title}
+            icon={<Text style={{ fontSize: 13 }}>{brokeStatus.emoji}</Text>}
+            color={brokeStatus.color}
+            backgroundColor={theme.colors.surfaceSubtle}
+            size="sm"
+            style={{ flexShrink: 0 }}
+          />
+
+          {onOpenCycleModal && (
+            <TouchableOpacity
+              onPress={onOpenCycleModal}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              style={[styles.editIconBtn, { backgroundColor: theme.colors.surfaceSubtle }]}
+            >
+              <Ionicons name="pencil" size={12} color={theme.colors.textSecondary} />
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
 
       {/* Main Numbers Row */}
       <View style={styles.numbersRow}>
-        <View>
+        <View style={{ flex: 1, marginRight: 8 }}>
           <Text style={[styles.metaLabel, { color: theme.colors.textMuted }]}>
             Allowance Left
           </Text>
           <Text
+            numberOfLines={1}
+            adjustsFontSizeToFit
             style={[
               styles.remainingAmount,
               {
                 color: theme.colors.text,
-                fontFamily: theme.fontStyle === 'mono' ? 'Courier' : undefined,
+                fontFamily: theme.fonts?.bold,
               },
             ]}
           >
@@ -70,11 +142,11 @@ export const RunwayWidget: React.FC = () => {
                 styles.runwayDays,
                 {
                   color: isBurnoutEarly ? theme.colors.danger : theme.colors.success,
-                  fontFamily: theme.fontStyle === 'mono' ? 'Courier' : undefined,
+                  fontFamily: theme.fonts?.bold,
                 },
               ]}
             >
-              {projectedRunwayDays} days left
+              {projectedRunwayDays} {projectedRunwayDays === 1 ? 'day' : 'days'} left
             </Text>
           </View>
         </View>
@@ -109,7 +181,7 @@ export const RunwayWidget: React.FC = () => {
             {percentRemaining.toFixed(0)}% of saku available
           </Text>
           <Text style={[styles.progressNote, { color: theme.colors.textMuted }]}>
-            {daysRemainingInCycle} days left in cycle
+            {daysRemainingInCycle} {daysRemainingInCycle === 1 ? 'day' : 'days'} left in cycle
           </Text>
         </View>
       </View>
@@ -142,22 +214,71 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 10,
+    gap: 8,
   },
   titleWrap: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
+    flex: 1,
+    flexShrink: 1,
   },
   title: {
     fontSize: 10,
     fontWeight: '700',
     letterSpacing: 0.5,
+    flexShrink: 1,
+  },
+  headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    flexShrink: 0,
+  },
+  editIconBtn: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyContainer: {
+    alignItems: 'center',
+    paddingVertical: 14,
+    gap: 6,
+  },
+  emptyTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    marginTop: 4,
+  },
+  emptySubtitle: {
+    fontSize: 12,
+    textAlign: 'center',
+    lineHeight: 16,
+    paddingHorizontal: 12,
+    marginBottom: 6,
+  },
+  setupBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 18,
+    marginTop: 4,
+  },
+  setupBtnText: {
+    color: '#FFF',
+    fontSize: 12,
+    fontWeight: '700',
   },
   numbersRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'baseline',
     marginBottom: 12,
+    gap: 8,
   },
   metaLabel: {
     fontSize: 11,
@@ -170,6 +291,7 @@ const styles = StyleSheet.create({
   },
   rightStat: {
     alignItems: 'flex-end',
+    flexShrink: 0,
   },
   runwayTag: {
     marginTop: 2,

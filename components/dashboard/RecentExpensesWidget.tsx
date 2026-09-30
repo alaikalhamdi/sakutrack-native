@@ -1,8 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useData } from '../../context/DataContext';
 import { useAppTheme } from '../../context/ThemeContext';
+import { Text } from '../common/AppText';
 import { Expense } from '../../types/expense';
 import { Card } from '../common/Card';
 
@@ -31,12 +32,16 @@ export const RecentExpensesWidget: React.FC<RecentExpensesProps> = ({
       <View style={styles.topRow}>
         <View style={styles.titleWrap}>
           <Ionicons name="receipt-outline" size={16} color={theme.colors.accent} />
-          <Text style={[styles.title, { color: theme.colors.textSecondary }]}>
+          <Text
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            style={[styles.title, { color: theme.colors.textSecondary }]}
+          >
             RECENT EXPENSES
           </Text>
         </View>
 
-        <TouchableOpacity onPress={onOpenExpensesTab}>
+        <TouchableOpacity onPress={onOpenExpensesTab} style={{ flexShrink: 0 }}>
           <Text style={[styles.viewAll, { color: theme.colors.primary }]}>View All →</Text>
         </TouchableOpacity>
       </View>
@@ -96,9 +101,6 @@ export const RecentExpensesWidget: React.FC<RecentExpensesProps> = ({
                       >
                         {item.title}
                       </Text>
-                      {item.isImpulse && (
-                        <Text style={styles.impulseEmoji}>🔥</Text>
-                      )}
                     </View>
                     <Text style={[styles.itemDate, { color: theme.colors.textMuted }]}>
                       {timeStr} • {cat?.name || 'General'}
@@ -112,7 +114,7 @@ export const RecentExpensesWidget: React.FC<RecentExpensesProps> = ({
                       styles.itemAmount,
                       {
                         color: theme.colors.text,
-                        fontFamily: theme.fontStyle === 'mono' ? 'Courier' : undefined,
+                        fontFamily: theme.fonts?.bold,
                       },
                     ]}
                   >
@@ -151,11 +153,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
+    flex: 1,
+    flexShrink: 1,
+    marginRight: 8,
   },
   title: {
     fontSize: 10,
     fontWeight: '700',
     letterSpacing: 0.5,
+    flexShrink: 1,
   },
   viewAll: {
     fontSize: 12,
@@ -216,9 +222,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '600',
     flexShrink: 1,
-  },
-  impulseEmoji: {
-    fontSize: 12,
   },
   itemDate: {
     fontSize: 11,

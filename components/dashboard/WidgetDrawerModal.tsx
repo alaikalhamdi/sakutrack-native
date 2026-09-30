@@ -6,13 +6,13 @@ import {
   ScrollView,
   StyleSheet,
   Switch,
-  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useData } from '../../context/DataContext';
 import { useAppTheme } from '../../context/ThemeContext';
+import { Text } from '../common/AppText';
 import { WidgetSlotSize } from '../../types/dashboard';
 import { Button } from '../common/Button';
 
@@ -66,7 +66,7 @@ export const WidgetDrawerModal: React.FC<WidgetDrawerModalProps> = ({ visible, o
                     styles.title,
                     {
                       color: theme.colors.text,
-                      fontFamily: theme.fontStyle === 'mono' ? 'Courier' : undefined,
+                      fontFamily: theme.fonts?.bold,
                     },
                   ]}
                 >

@@ -1,9 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import React, { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useData } from '../../context/DataContext';
 import { useAppTheme } from '../../context/ThemeContext';
+import { Text } from '../common/AppText';
 import { DashboardWidgetConfig, WidgetType } from '../../types/dashboard';
 import { CategoryDonutWidget } from './CategoryDonutWidget';
 import { QuickAddLauncherWidget } from './QuickAddLauncherWidget';
@@ -21,6 +22,7 @@ interface DraggableDashboardProps {
   onOpenAddExpense: () => void;
   onOpenExpensesTab: () => void;
   onOpenGoalsTab: () => void;
+  onOpenCycleModal?: () => void;
   onEditExpense?: (expense: Expense) => void;
 }
 
@@ -30,6 +32,7 @@ export const DraggableDashboard: React.FC<DraggableDashboardProps> = ({
   onOpenAddExpense,
   onOpenExpensesTab,
   onOpenGoalsTab,
+  onOpenCycleModal,
   onEditExpense,
 }) => {
   const { theme } = useAppTheme();
@@ -69,7 +72,7 @@ export const DraggableDashboard: React.FC<DraggableDashboardProps> = ({
       case 'spending_summary':
         return <SpendCounterWidget />;
       case 'burnout_runway':
-        return <RunwayWidget />;
+        return <RunwayWidget onOpenCycleModal={onOpenCycleModal} />;
       case 'quick_add_launcher':
         return <QuickAddLauncherWidget onOpenFullModal={onOpenAddExpense} />;
       case 'savings_carousel':
@@ -120,9 +123,13 @@ export const DraggableDashboard: React.FC<DraggableDashboardProps> = ({
             },
           ]}
         >
-          <View style={styles.bannerLeft}>
+          <View style={[styles.bannerLeft, { flex: 1, marginRight: 8 }]}>
             <Ionicons name="apps" size={18} color={theme.colors.primary} />
-            <Text style={[styles.bannerText, { color: theme.colors.text }]}>
+            <Text
+              numberOfLines={1}
+              ellipsizeMode="tail"
+              style={[styles.bannerText, { color: theme.colors.text, flexShrink: 1 }]}
+            >
               Dashboard Customizer Active
             </Text>
           </View>
@@ -243,7 +250,11 @@ export const DraggableDashboard: React.FC<DraggableDashboardProps> = ({
                       { backgroundColor: theme.colors.surfaceSubtle },
                     ]}
                   >
-                    <Text style={[styles.cardTitleEdit, { color: theme.colors.textSecondary }]}>
+                    <Text
+                      numberOfLines={1}
+                      ellipsizeMode="tail"
+                      style={[styles.cardTitleEdit, { color: theme.colors.textSecondary, flex: 1, marginRight: 8 }]}
+                    >
                       {item.title} ({item.slotSize})
                     </Text>
                     <View style={styles.editControls}>

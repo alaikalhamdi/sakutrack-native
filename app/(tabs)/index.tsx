@@ -4,13 +4,14 @@ import React, { useState } from 'react';
 import {
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Text } from '../../components/common/AppText';
 import { Header } from '../../components/common/Header';
 import { DraggableDashboard } from '../../components/dashboard/DraggableDashboard';
 import { AddExpenseModal } from '../../components/expenses/AddExpenseModal';
+import { AllowanceCycleModal } from '../../components/expenses/AllowanceCycleModal';
 import { EditExpenseModal } from '../../components/expenses/EditExpenseModal';
 import { ThemeCustomizerModal } from '../../components/theme/ThemeCustomizerModal';
 import { useAppTheme } from '../../context/ThemeContext';
@@ -22,6 +23,7 @@ export default function DashboardScreen() {
 
   const [themeModalVisible, setThemeModalVisible] = useState(false);
   const [addExpenseVisible, setAddExpenseVisible] = useState(false);
+  const [cycleModalVisible, setCycleModalVisible] = useState(false);
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
 
@@ -48,6 +50,7 @@ export default function DashboardScreen() {
           onOpenAddExpense={() => setAddExpenseVisible(true)}
           onOpenExpensesTab={() => router.push('/(tabs)/expenses')}
           onOpenGoalsTab={() => router.push('/(tabs)/goals')}
+          onOpenCycleModal={() => setCycleModalVisible(true)}
           onEditExpense={setEditingExpense}
         />
       </ScrollView>
@@ -74,6 +77,12 @@ export default function DashboardScreen() {
       <ThemeCustomizerModal
         visible={themeModalVisible}
         onClose={() => setThemeModalVisible(false)}
+      />
+
+      {/* Allowance Cycle Setup Modal */}
+      <AllowanceCycleModal
+        visible={cycleModalVisible}
+        onClose={() => setCycleModalVisible(false)}
       />
 
       {/* Add Expense Modal */}

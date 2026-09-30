@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { TextStyle } from 'react-native';
 import { DEFAULT_THEME, THEME_PRESETS } from '../constants/themes';
+import { FONT_DEFINITIONS, FontWeightVariant, getFontFamily } from '../constants/typography';
 import { StorageService } from '../services/storage';
 import { BorderStyleId, FontStyleId, ThemeConfig, ThemePresetId } from '../types/theme';
 
@@ -11,6 +13,7 @@ interface ThemeContextType {
   updateFontStyle: (fontStyle: FontStyleId) => Promise<void>;
   resetToPreset: (presetId: ThemePresetId) => Promise<void>;
   isReady: boolean;
+  getFont: (weight?: TextStyle['fontWeight'] | FontWeightVariant) => string;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -71,16 +74,26 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     await setPreset(presetId);
   };
 
+  const getFont = (weight?: TextStyle['fontWeight'] | FontWeightVariant) => {
+    return getFontFamily(theme.fontStyle, weight);
+  };
+
+  const themeWithFonts: ThemeConfig = {
+    ...theme,
+    fonts: FONT_DEFINITIONS[theme.fontStyle] ?? FONT_DEFINITIONS.modern,
+  };
+
   return (
     <ThemeContext.Provider
       value={{
-        theme,
+        theme: themeWithFonts,
         setPreset,
         updateCustomTheme,
         updateBorderRadius,
         updateFontStyle,
         resetToPreset,
         isReady,
+        getFont,
       }}
     >
       {children}

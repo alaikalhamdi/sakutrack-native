@@ -7,14 +7,13 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
-  Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useData } from '../../context/DataContext';
 import { useAppTheme } from '../../context/ThemeContext';
+import { Text, TextInput } from '../common/AppText';
 import { Button } from '../common/Button';
 
 interface ManageCategoriesModalProps {
@@ -118,7 +117,7 @@ export const ManageCategoriesModal: React.FC<ManageCategoriesModalProps> = ({
                     styles.title,
                     {
                       color: theme.colors.text,
-                      fontFamily: theme.fontStyle === 'mono' ? 'Courier' : undefined,
+                      fontFamily: theme.fonts?.bold,
                     },
                   ]}
                 >

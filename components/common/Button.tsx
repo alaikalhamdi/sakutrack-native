@@ -4,12 +4,12 @@ import {
   ActivityIndicator,
   StyleProp,
   StyleSheet,
-  Text,
   TextStyle,
   TouchableOpacity,
   ViewStyle,
 } from 'react-native';
 import { useAppTheme } from '../../context/ThemeContext';
+import { Text } from './AppText';
 
 interface ButtonProps {
   title: string;
@@ -34,7 +34,7 @@ export const Button: React.FC<ButtonProps> = ({
   style,
   textStyle,
 }) => {
-  const { theme } = useAppTheme();
+  const { theme, getFont } = useAppTheme();
 
   const handlePress = () => {
     if (disabled || loading) return;
@@ -139,10 +139,7 @@ export const Button: React.FC<ButtonProps> = ({
               {
                 color: getTextColor(),
                 fontSize: getFontSize(),
-                fontFamily:
-                  theme.fontStyle === 'mono'
-                    ? 'Courier'
-                    : undefined,
+                fontFamily: getFont('bold'),
                 fontWeight: '700',
                 marginLeft: icon ? 8 : 0,
               },

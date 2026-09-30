@@ -4,14 +4,15 @@ import {
   Modal,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { THEME_PRESETS } from '../../constants/themes';
+import { getFontFamily } from '../../constants/typography';
 import { useAppTheme } from '../../context/ThemeContext';
 import { BorderStyleId, FontStyleId, ThemePresetId } from '../../types/theme';
+import { Text } from '../common/AppText';
 import { Button } from '../common/Button';
 import { Card } from '../common/Card';
 
@@ -25,7 +26,7 @@ const ACCENT_COLORS = [
   '#FF5722', // Retro Orange
   '#00F0FF', // Cyber Cyan
   '#3B82F6', // Campus Blue
-  '#EC4899', // Boba Pink
+  '#EC4899', // Berry Pink
   '#EAB308', // Sunlight Gold
   '#8B5CF6', // Purple Glow
   '#10B981', // Emerald
@@ -35,7 +36,7 @@ export const ThemeCustomizerModal: React.FC<ThemeCustomizerModalProps> = ({
   visible,
   onClose,
 }) => {
-  const { theme, setPreset, updateCustomTheme, updateBorderRadius, updateFontStyle } =
+  const { theme, setPreset, updateCustomTheme, updateBorderRadius, updateFontStyle, getFont } =
     useAppTheme();
 
   const [activeTab, setActiveTab] = useState<'presets' | 'diy'>('presets');
@@ -54,9 +55,10 @@ export const ThemeCustomizerModal: React.FC<ThemeCustomizerModalProps> = ({
   ];
 
   const fontStyles: { id: FontStyleId; label: string; sample: string }[] = [
-    { id: 'modern', label: 'Modern Sans', sample: 'SakuTrack 2026' },
-    { id: 'playful', label: 'Playful Vibe', sample: 'SakuTrack 2026' },
-    { id: 'mono', label: 'Retro Monospace', sample: 'SakuTrack 2026' },
+    { id: 'modern', label: 'Modern Sans (Jakarta)', sample: 'SakuTrack 2026' },
+    { id: 'playful', label: 'Playful Vibe (Quicksand)', sample: 'SakuTrack 2026' },
+    { id: 'mono', label: 'Retro Monospace (SpaceMono)', sample: 'SakuTrack 2026' },
+    { id: 'serif', label: 'Editorial Serif (Lora)', sample: 'SakuTrack 2026' },
   ];
 
   return (
@@ -81,7 +83,7 @@ export const ThemeCustomizerModal: React.FC<ThemeCustomizerModalProps> = ({
                     styles.title,
                     {
                       color: theme.colors.text,
-                      fontFamily: theme.fontStyle === 'mono' ? 'Courier' : undefined,
+                      fontFamily: getFont('bold'),
                     },
                   ]}
                 >
@@ -191,7 +193,7 @@ export const ThemeCustomizerModal: React.FC<ThemeCustomizerModalProps> = ({
                               styles.presetName,
                               {
                                 color: pTheme.colors.text,
-                                fontFamily: pTheme.fontStyle === 'mono' ? 'Courier' : undefined,
+                                fontFamily: getFontFamily(pTheme.fontStyle, 'bold'),
                               },
                             ]}
                           >
@@ -322,8 +324,8 @@ export const ThemeCustomizerModal: React.FC<ThemeCustomizerModalProps> = ({
                             <Text
                               style={{
                                 color: theme.colors.textSecondary,
-                                fontSize: 12,
-                                fontFamily: item.id === 'mono' ? 'Courier' : undefined,
+                                fontSize: 13,
+                                fontFamily: getFontFamily(item.id, 'medium'),
                               }}
                             >
                               {item.sample}
@@ -354,7 +356,7 @@ export const ThemeCustomizerModal: React.FC<ThemeCustomizerModalProps> = ({
                       color: theme.colors.text,
                       fontSize: 16,
                       fontWeight: '700',
-                      fontFamily: theme.fontStyle === 'mono' ? 'Courier' : undefined,
+                      fontFamily: getFont('bold'),
                     }}
                   >
                     Sample Widget Card

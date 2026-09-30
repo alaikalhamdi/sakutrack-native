@@ -1,8 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
 import React, { useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useData } from '../../context/DataContext';
 import { useAppTheme } from '../../context/ThemeContext';
+import { Text } from '../common/AppText';
 import { Card } from '../common/Card';
 
 export const CategoryDonutWidget: React.FC = () => {
@@ -31,25 +32,19 @@ export const CategoryDonutWidget: React.FC = () => {
       .sort((a, b) => b.spent - a.spent);
   }, [expenses, categories]);
 
-  const impulseCount = useMemo(() => {
-    return expenses.filter((e) => e.isImpulse).length;
-  }, [expenses]);
-
   return (
     <Card style={styles.card}>
       <View style={styles.topRow}>
         <View style={styles.titleWrap}>
           <Ionicons name="pie-chart-outline" size={16} color={theme.colors.accent} />
-          <Text style={[styles.title, { color: theme.colors.textSecondary }]}>
+          <Text
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            style={[styles.title, { color: theme.colors.textSecondary }]}
+          >
             WHERE MONEY GOES
           </Text>
         </View>
-
-        {impulseCount > 0 && (
-          <View style={[styles.impulseBadge, { backgroundColor: '#FFEBE5' }]}>
-            <Text style={styles.impulseText}>⚡ {impulseCount} Impulse</Text>
-          </View>
-        )}
       </View>
 
       {categoryStats.length === 0 ? (
@@ -116,21 +111,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
+    flex: 1,
+    flexShrink: 1,
   },
   title: {
     fontSize: 10,
     fontWeight: '700',
     letterSpacing: 0.5,
-  },
-  impulseBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 8,
-  },
-  impulseText: {
-    fontSize: 10,
-    fontWeight: '700',
-    color: '#D90429',
+    flexShrink: 1,
   },
   emptyText: {
     fontSize: 12,

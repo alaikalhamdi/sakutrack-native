@@ -1,8 +1,9 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useData } from '../../context/DataContext';
 import { useAppTheme } from '../../context/ThemeContext';
 import { Badge } from '../common/Badge';
+import { Text } from '../common/AppText';
 
 export const ShareableCardView: React.FC = () => {
   const { theme } = useAppTheme();
@@ -36,7 +37,7 @@ export const ShareableCardView: React.FC = () => {
               styles.brandTitle,
               {
                 color: theme.colors.primary,
-                fontFamily: theme.fontStyle === 'mono' ? 'Courier' : undefined,
+                fontFamily: theme.fonts?.bold,
               },
             ]}
           >

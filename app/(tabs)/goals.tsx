@@ -5,11 +5,11 @@ import React, { useState } from 'react';
 import {
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Text } from '../../components/common/AppText';
 import { Card } from '../../components/common/Card';
 import { AddGoalModal } from '../../components/goals/AddGoalModal';
 import { GoalCelebrationModal } from '../../components/goals/GoalCelebrationModal';
@@ -56,19 +56,24 @@ export default function GoalsScreen() {
     >
       {/* Screen Header */}
       <View style={styles.topHeader}>
-        <View>
+        <View style={styles.headerLeft}>
           <Text
+            numberOfLines={1}
             style={[
               styles.screenTitle,
               {
                 color: theme.colors.text,
-                fontFamily: theme.fontStyle === 'mono' ? 'Courier' : undefined,
+                fontFamily: theme.fonts?.bold,
               },
             ]}
           >
             Savings Goals 🎯
           </Text>
-          <Text style={[styles.screenSubtitle, { color: theme.colors.textSecondary }]}>
+          <Text
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            style={[styles.screenSubtitle, { color: theme.colors.textSecondary }]}
+          >
             Stash cash for student wishes, gadgets & experiences
           </Text>
         </View>
@@ -77,7 +82,7 @@ export default function GoalsScreen() {
           onPress={() => setAddModalVisible(true)}
           style={[styles.addBtn, { backgroundColor: theme.colors.primary }]}
         >
-          <Ionicons name="add" size={20} color="#FFF" />
+          <Ionicons name="add" size={18} color="#FFF" />
           <Text style={styles.addBtnText}>New Goal</Text>
         </TouchableOpacity>
       </View>
@@ -86,16 +91,18 @@ export default function GoalsScreen() {
         {/* Overall Goals Progress Card */}
         <Card style={styles.summaryCard}>
           <View style={styles.summaryTop}>
-            <View>
-              <Text style={[styles.summaryLabel, { color: theme.colors.textSecondary }]}>
+            <View style={{ flex: 1, marginRight: 8 }}>
+              <Text numberOfLines={1} style={[styles.summaryLabel, { color: theme.colors.textSecondary }]}>
                 TOTAL SAVED FOR GOALS
               </Text>
               <Text
+                numberOfLines={1}
+                adjustsFontSizeToFit
                 style={[
                   styles.summaryTotal,
                   {
                     color: theme.colors.text,
-                    fontFamily: theme.fontStyle === 'mono' ? 'Courier' : undefined,
+                    fontFamily: theme.fonts?.bold,
                   },
                 ]}
               >
@@ -106,7 +113,7 @@ export default function GoalsScreen() {
             <View
               style={[
                 styles.overallBadge,
-                { backgroundColor: theme.colors.primaryLight },
+                { backgroundColor: theme.colors.primaryLight, flexShrink: 0 },
               ]}
             >
               <Text style={[styles.overallBadgeText, { color: theme.colors.primary }]}>
@@ -210,7 +217,7 @@ export default function GoalsScreen() {
                         styles.currentAmount,
                         {
                           color: isCompleted ? '#D97706' : theme.colors.text,
-                          fontFamily: theme.fontStyle === 'mono' ? 'Courier' : undefined,
+                          fontFamily: theme.fonts?.bold,
                         },
                       ]}
                     >
@@ -311,6 +318,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: 12,
     paddingBottom: 8,
+    gap: 10,
+  },
+  headerLeft: {
+    flex: 1,
+    marginRight: 6,
   },
   screenTitle: {
     fontSize: 22,
@@ -325,9 +337,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
     borderRadius: 20,
+    flexShrink: 0,
   },
   addBtnText: {
     color: '#FFF',

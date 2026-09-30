@@ -1,6 +1,7 @@
 import React from 'react';
-import { StyleProp, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
+import { StyleProp, StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
 import { useAppTheme } from '../../context/ThemeContext';
+import { Text } from './AppText';
 
 interface BadgeProps {
   label: string;
@@ -21,7 +22,7 @@ export const Badge: React.FC<BadgeProps> = ({
   textStyle,
   size = 'md',
 }) => {
-  const { theme } = useAppTheme();
+  const { theme, getFont } = useAppTheme();
 
   const textColor = color || theme.colors.primary;
   const bgColor = backgroundColor || theme.colors.primaryLight;
@@ -47,7 +48,7 @@ export const Badge: React.FC<BadgeProps> = ({
             color: textColor,
             fontSize: size === 'sm' ? 11 : 13,
             fontWeight: '600',
-            fontFamily: theme.fontStyle === 'mono' ? 'Courier' : undefined,
+            fontFamily: getFont('semiBold'),
           },
           textStyle,
         ]}
@@ -62,7 +63,6 @@ const styles = StyleSheet.create({
   badge: {
     flexDirection: 'row',
     alignItems: 'center',
-    alignSelf: 'flex-start',
   },
   iconContainer: {
     marginRight: 4,

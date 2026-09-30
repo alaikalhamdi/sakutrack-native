@@ -4,12 +4,12 @@ import React, { useEffect } from 'react';
 import {
   Modal,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
 import { useAppTheme } from '../../context/ThemeContext';
 import { SavingsGoal } from '../../types/expense';
+import { Text } from '../common/AppText';
 import { Button } from '../common/Button';
 
 interface GoalCelebrationModalProps {
@@ -67,7 +67,7 @@ export const GoalCelebrationModal: React.FC<GoalCelebrationModalProps> = ({
               styles.heading,
               {
                 color: theme.colors.text,
-                fontFamily: theme.fontStyle === 'mono' ? 'Courier' : undefined,
+                fontFamily: theme.fonts?.bold,
               },
             ]}
           >

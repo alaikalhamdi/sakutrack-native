@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { CURRENCIES } from '../constants/currencies';
 import { calculatePredictiveInsights } from '../services/insights';
-import { StorageService } from '../services/storage';
+import { getInitialProfile, StorageService } from '../services/storage';
 import { isSupabaseConfigured, supabase } from '../services/supabase';
 import { DashboardWidgetConfig, WidgetSlotSize } from '../types/dashboard';
 import {
@@ -51,7 +51,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [categories, setCategories] = useState<Category[]>([]);
   const [goals, setGoals] = useState<SavingsGoal[]>([]);
   const [widgets, setWidgets] = useState<DashboardWidgetConfig[]>([]);
-  const [profile, setProfile] = useState<UserProfile>(StorageService.loadProfile as any);
+  const [profile, setProfile] = useState<UserProfile>(getInitialProfile);
   const [isSyncing, setIsSyncing] = useState(false);
 
   useEffect(() => {
@@ -132,7 +132,6 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
               title: newExpense.title,
               amount: newExpense.amount,
               spent_at: newExpense.spentAt,
-              is_impulse: newExpense.isImpulse,
               note: newExpense.note || null,
             })
             .then(() => {});
@@ -169,7 +168,6 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
               title: expense.title,
               amount: expense.amount,
               category_id: expense.categoryId,
-              is_impulse: expense.isImpulse,
               note: expense.note || null,
             })
             .eq('id', expense.id)

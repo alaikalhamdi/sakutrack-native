@@ -3,12 +3,11 @@ import React, { useCallback, useMemo, useState } from 'react';
 import {
   ScrollView,
   StyleSheet,
-  Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Text, TextInput } from '../../components/common/AppText';
 import { Badge } from '../../components/common/Badge';
 import { Card } from '../../components/common/Card';
 import { AddExpenseModal } from '../../components/expenses/AddExpenseModal';
@@ -31,9 +30,7 @@ export default function ExpensesScreen() {
   } = useData();
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterPeriod, setFilterPeriod] = useState<'all' | 'today' | 'week' | 'month' | 'impulse'>(
-    'all'
-  );
+  const [filterPeriod, setFilterPeriod] = useState<'all' | 'today' | 'week' | 'month'>('all');
   const [selectedCatId, setSelectedCatId] = useState<string | null>(null);
 
   const [addModalVisible, setAddModalVisible] = useState(false);
@@ -79,9 +76,6 @@ export default function ExpensesScreen() {
           expDate.getFullYear() === now.getFullYear()
         );
       }
-      if (filterPeriod === 'impulse') {
-        return e.isImpulse;
-      }
 
       return true;
     });
@@ -106,26 +100,31 @@ export default function ExpensesScreen() {
     >
       {/* Screen Title */}
       <View style={styles.topHeader}>
-        <View>
+        <View style={{ flex: 1, marginRight: 8 }}>
           <Text
+            numberOfLines={1}
             style={[
               styles.screenTitle,
               {
                 color: theme.colors.text,
-                fontFamily: theme.fontStyle === 'mono' ? 'Courier' : undefined,
+                fontFamily: theme.fonts?.bold,
               },
             ]}
           >
             Expenses & Saku 💸
           </Text>
-          <Text style={[styles.screenSubtitle, { color: theme.colors.textSecondary }]}>
+          <Text
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            style={[styles.screenSubtitle, { color: theme.colors.textSecondary }]}
+          >
             Monitor your student spending and allowance health
           </Text>
         </View>
 
         <TouchableOpacity
           onPress={() => setAddModalVisible(true)}
-          style={[styles.addBtn, { backgroundColor: theme.colors.primary }]}
+          style={[styles.addBtn, { backgroundColor: theme.colors.primary, flexShrink: 0 }]}
         >
           <Ionicons name="add" size={20} color="#FFF" />
           <Text style={styles.addBtnText}>Log</Text>
@@ -138,12 +137,20 @@ export default function ExpensesScreen() {
           <View style={styles.allowanceTop}>
             <View style={styles.allowanceTitleRow}>
               <Ionicons name="wallet-outline" size={18} color={theme.colors.accent} />
-              <View>
-                <Text style={[styles.allowanceLabel, { color: theme.colors.textSecondary }]}>
-                  {cycle?.period.toUpperCase() || 'MONTHLY'} ALLOWANCE CYCLE
+              <View style={{ flex: 1, marginRight: 8 }}>
+                <Text
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                  style={[styles.allowanceLabel, { color: theme.colors.textSecondary }]}
+                >
+                  {cycle ? `${cycle.period.toUpperCase()} ALLOWANCE CYCLE` : 'NO ACTIVE ALLOWANCE'}
                 </Text>
                 {cycleDatesFormatted ? (
-                  <Text style={[styles.cycleDates, { color: theme.colors.textMuted }]}>
+                  <Text
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                    style={[styles.cycleDates, { color: theme.colors.textMuted }]}
+                  >
                     {cycleDatesFormatted}
                   </Text>
                 ) : null}
@@ -152,32 +159,40 @@ export default function ExpensesScreen() {
 
             <TouchableOpacity
               onPress={() => setCycleModalVisible(true)}
-              style={[styles.editPlanBtn, { backgroundColor: theme.colors.primaryLight }]}
+              style={[styles.editPlanBtn, { backgroundColor: theme.colors.primaryLight, flexShrink: 0 }]}
             >
-              <Ionicons name="pencil" size={12} color={theme.colors.primary} />
-              <Text style={[styles.editPlanText, { color: theme.colors.primary }]}>Edit Plan</Text>
+              <Ionicons name={cycle ? 'pencil' : 'add'} size={12} color={theme.colors.primary} />
+              <Text style={[styles.editPlanText, { color: theme.colors.primary }]}>
+                {cycle ? 'Edit Plan' : 'Set Plan'}
+              </Text>
             </TouchableOpacity>
           </View>
 
           <View style={styles.allowanceStatsRow}>
-            <View>
-              <Text style={[styles.statValue, { color: theme.colors.text }]}>
+            <View style={{ flex: 1, marginRight: 8 }}>
+              <Text
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                style={[styles.statValue, { color: theme.colors.text }]}
+              >
                 {formatMoney(predictiveInsights.remainingAllowance)}
               </Text>
-              <Text style={[styles.statSub, { color: theme.colors.textMuted }]}>
-                Remaining of {formatMoney(cycle?.amount || 0)}
+              <Text numberOfLines={1} style={[styles.statSub, { color: theme.colors.textMuted }]}>
+                {cycle ? `Remaining of ${formatMoney(cycle.amount)}` : 'Set allowance budget'}
               </Text>
             </View>
 
-            <View style={{ alignItems: 'flex-end', gap: 4 }}>
+            <View style={{ alignItems: 'flex-end', gap: 4, flexShrink: 0 }}>
               <Badge
-                label={`${predictiveInsights.daysRemainingInCycle} days left`}
+                label={`${predictiveInsights.daysRemainingInCycle} ${
+                  predictiveInsights.daysRemainingInCycle === 1 ? 'day' : 'days'
+                } left`}
                 color={theme.colors.primary}
                 backgroundColor={theme.colors.surfaceSubtle}
                 size="sm"
               />
               <Text style={[styles.safeDailyNote, { color: theme.colors.accent }]}>
-                Safe daily: {formatMoney(predictiveInsights.dailySafeToSpend)}
+                Safe daily: {cycle ? formatMoney(predictiveInsights.dailySafeToSpend) : '—'}
               </Text>
             </View>
           </View>
@@ -199,7 +214,7 @@ export default function ExpensesScreen() {
           <TextInput
             value={searchQuery}
             onChangeText={setSearchQuery}
-            placeholder="Search expenses (e.g. boba, transit, books)..."
+            placeholder="Search expenses (e.g. coffee, transit, books)..."
             placeholderTextColor={theme.colors.textMuted}
             style={[styles.searchInput, { color: theme.colors.text }]}
           />
@@ -221,7 +236,6 @@ export default function ExpensesScreen() {
             { id: 'today', label: 'Today' },
             { id: 'week', label: 'This Week' },
             { id: 'month', label: 'This Month' },
-            { id: 'impulse', label: '🔥 Impulse' },
           ].map((tab) => {
             const isSelected = filterPeriod === tab.id;
             return (
@@ -391,17 +405,12 @@ export default function ExpensesScreen() {
                                 styles.itemTitle,
                                 {
                                   color: theme.colors.text,
-                                  fontFamily: theme.fontStyle === 'mono' ? 'Courier' : undefined,
+                                  fontFamily: theme.fonts?.semiBold,
                                 },
                               ]}
                             >
                               {item.title}
                             </Text>
-                            {item.isImpulse && (
-                              <View style={styles.impulseChip}>
-                                <Text style={styles.impulseChipText}>🔥 Impulse</Text>
-                              </View>
-                            )}
                           </View>
                           <Text style={[styles.itemSub, { color: theme.colors.textMuted }]}>
                             {dateStr} • {cat?.name || 'General'}
@@ -416,7 +425,7 @@ export default function ExpensesScreen() {
                             styles.itemPrice,
                             {
                               color: theme.colors.text,
-                              fontFamily: theme.fontStyle === 'mono' ? 'Courier' : undefined,
+                              fontFamily: theme.fonts?.bold,
                             },
                           ]}
                         >
@@ -669,17 +678,6 @@ const styles = StyleSheet.create({
   itemTitle: {
     fontSize: 14,
     fontWeight: '700',
-  },
-  impulseChip: {
-    backgroundColor: '#FFEBE5',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 6,
-  },
-  impulseChipText: {
-    color: '#D90429',
-    fontSize: 9,
-    fontWeight: '800',
   },
   itemSub: {
     fontSize: 11,

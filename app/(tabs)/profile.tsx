@@ -4,12 +4,11 @@ import {
   ScrollView,
   StyleSheet,
   Switch,
-  Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Text, TextInput } from '../../components/common/AppText';
 import { Badge } from '../../components/common/Badge';
 import { Button } from '../../components/common/Button';
 import { Card } from '../../components/common/Card';
@@ -57,7 +56,7 @@ export default function ProfileScreen() {
             styles.screenTitle,
             {
               color: theme.colors.text,
-              fontFamily: theme.fontStyle === 'mono' ? 'Courier' : undefined,
+              fontFamily: theme.fonts?.bold,
             },
           ]}
         >

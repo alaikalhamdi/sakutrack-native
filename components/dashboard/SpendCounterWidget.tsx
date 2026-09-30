@@ -1,7 +1,8 @@
 import React, { useMemo, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useData } from '../../context/DataContext';
 import { useAppTheme } from '../../context/ThemeContext';
+import { Text } from '../common/AppText';
 import { Card } from '../common/Card';
 
 type Period = 'today' | 'week' | 'month';
@@ -39,7 +40,11 @@ export const SpendCounterWidget: React.FC = () => {
   return (
     <Card style={styles.card}>
       <View style={styles.topRow}>
-        <Text style={[styles.title, { color: theme.colors.textSecondary }]}>
+        <Text
+          numberOfLines={1}
+          ellipsizeMode="tail"
+          style={[styles.title, { color: theme.colors.textSecondary }]}
+        >
           SPENT ({period.toUpperCase()})
         </Text>
         {/* Toggle Pills */}
@@ -82,7 +87,7 @@ export const SpendCounterWidget: React.FC = () => {
           styles.amount,
           {
             color: theme.colors.text,
-            fontFamily: theme.fontStyle === 'mono' ? 'Courier' : undefined,
+            fontFamily: theme.fonts?.bold,
           },
         ]}
       >
@@ -106,16 +111,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    gap: 6,
   },
   title: {
     fontSize: 10,
     fontWeight: '700',
     letterSpacing: 0.5,
+    flex: 1,
+    flexShrink: 1,
+    marginRight: 4,
   },
   toggleBar: {
     flexDirection: 'row',
     borderRadius: 8,
     padding: 2,
+    flexShrink: 0,
   },
   pill: {
     paddingHorizontal: 5,

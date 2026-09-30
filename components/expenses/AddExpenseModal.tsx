@@ -7,15 +7,13 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
-  Switch,
-  Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useData } from '../../context/DataContext';
 import { useAppTheme } from '../../context/ThemeContext';
+import { Text, TextInput } from '../common/AppText';
 import { Button } from '../common/Button';
 
 interface AddExpenseModalProps {
@@ -29,8 +27,7 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({ visible, onClo
 
   const [title, setTitle] = useState('');
   const [amountStr, setAmountStr] = useState('');
-  const [selectedCatId, setSelectedCatId] = useState(categories[0]?.id || 'food_boba');
-  const [isImpulse, setIsImpulse] = useState(false);
+  const [selectedCatId, setSelectedCatId] = useState(categories[0]?.id || 'food_drinks');
   const [note, setNote] = useState('');
   const [error, setError] = useState('');
 
@@ -59,13 +56,11 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({ visible, onClo
       amount: parsedAmount,
       spentAt: new Date().toISOString(),
       note: note.trim() || undefined,
-      isImpulse,
     });
 
     setTitle('');
     setAmountStr('');
     setNote('');
-    setIsImpulse(false);
     setError('');
     onClose();
   };
@@ -94,7 +89,7 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({ visible, onClo
                     styles.title,
                     {
                       color: theme.colors.text,
-                      fontFamily: theme.fontStyle === 'mono' ? 'Courier' : undefined,
+                      fontFamily: theme.fonts?.bold,
                     },
                   ]}
                 >
@@ -141,7 +136,7 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({ visible, onClo
                       backgroundColor: theme.colors.surfaceSubtle,
                       borderColor: theme.colors.border,
                       borderRadius: Math.min(theme.borderRadius, 14),
-                      fontFamily: theme.fontStyle === 'mono' ? 'Courier' : undefined,
+                      fontFamily: theme.fonts?.bold,
                     },
                   ]}
                 />
@@ -158,7 +153,7 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({ visible, onClo
                     setTitle(val);
                     setError('');
                   }}
-                  placeholder="e.g. Boba Milk Tea, Lecture Notes, Train Ticket"
+                  placeholder="e.g. Campus Lunch, Lecture Notes, Train Ticket"
                   placeholderTextColor={theme.colors.textMuted}
                   style={[
                     styles.textInput,
@@ -218,33 +213,6 @@ export const AddExpenseModal: React.FC<AddExpenseModalProps> = ({ visible, onClo
                 </View>
               </View>
 
-              {/* Impulse Purchase Toggle */}
-              <View
-                style={[
-                  styles.toggleRow,
-                  {
-                    backgroundColor: theme.colors.surfaceSubtle,
-                    borderRadius: Math.min(theme.borderRadius, 12),
-                  },
-                ]}
-              >
-                <View style={styles.toggleLeft}>
-                  <Text style={styles.impulseIcon}>🔥</Text>
-                  <View>
-                    <Text style={[styles.toggleTitle, { color: theme.colors.text }]}>
-                      Impulse Purchase?
-                    </Text>
-                    <Text style={[styles.toggleSub, { color: theme.colors.textMuted }]}>
-                      Unplanned snack, boba, or impulse treat
-                    </Text>
-                  </View>
-                </View>
-                <Switch
-                  value={isImpulse}
-                  onValueChange={setIsImpulse}
-                  trackColor={{ false: theme.colors.border, true: '#FF5722' }}
-                />
-              </View>
 
               {/* Note (optional) */}
               <View style={styles.inputGroup}>
@@ -368,30 +336,6 @@ const styles = StyleSheet.create({
   },
   catChipText: {
     fontSize: 12,
-  },
-  toggleRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 12,
-    marginBottom: 14,
-  },
-  toggleLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    flex: 1,
-  },
-  impulseIcon: {
-    fontSize: 20,
-  },
-  toggleTitle: {
-    fontSize: 13,
-    fontWeight: '700',
-  },
-  toggleSub: {
-    fontSize: 11,
-    marginTop: 1,
   },
   footer: {
     paddingVertical: 14,

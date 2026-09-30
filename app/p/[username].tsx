@@ -8,11 +8,11 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Text } from '../../components/common/AppText';
 import { Badge } from '../../components/common/Badge';
 import { Card } from '../../components/common/Card';
 import { useData } from '../../context/DataContext';
