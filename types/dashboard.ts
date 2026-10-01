@@ -18,6 +18,21 @@ export interface DashboardWidgetConfig {
   order: number;
 }
 
+export const DASHBOARD_GRID_GAP = 12;
+export const WIDGET_BASE_ROW_HEIGHT = 185;
+export const EDIT_HEADER_HEIGHT = 38;
+
+export const WIDGET_SLOT_HEIGHTS: Record<WidgetSlotSize, number> = {
+  '1x1': WIDGET_BASE_ROW_HEIGHT,
+  '2x1': WIDGET_BASE_ROW_HEIGHT,
+  '2x2': WIDGET_BASE_ROW_HEIGHT * 2 + DASHBOARD_GRID_GAP,
+};
+
+export function getWidgetSlotHeight(slotSize: WidgetSlotSize, isEditMode = false): number {
+  const base = WIDGET_SLOT_HEIGHTS[slotSize] || WIDGET_BASE_ROW_HEIGHT;
+  return isEditMode ? base + EDIT_HEADER_HEIGHT : base;
+}
+
 export const WIDGET_ALLOWED_SIZES: Record<WidgetType, WidgetSlotSize[]> = {
   safe_to_spend: ['1x1', '2x1'],
   spending_summary: ['1x1', '2x1'],
@@ -36,4 +51,3 @@ export function isSizeAllowed(type: WidgetType, size: WidgetSlotSize): boolean {
   const allowed = getAllowedSizes(type);
   return allowed.includes(size);
 }
-

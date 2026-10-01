@@ -1,21 +1,23 @@
-import { Ionicons } from '@expo/vector-icons';
-import * as Haptics from 'expo-haptics';
-import React from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { useData } from '../../context/DataContext';
-import { useAppTheme } from '../../context/ThemeContext';
-import { Text } from '../common/AppText';
-import { Card } from '../common/Card';
+import { Ionicons } from "@expo/vector-icons";
+import * as Haptics from "expo-haptics";
+import React from "react";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { useData } from "../../context/DataContext";
+import { useAppTheme } from "../../context/ThemeContext";
+import { Text } from "../common/AppText";
+import { Card } from "../common/Card";
 
 interface SavingsProps {
   onOpenGoalsTab: () => void;
 }
 
-export const SavingsGoalsWidget: React.FC<SavingsProps> = ({ onOpenGoalsTab }) => {
+export const SavingsGoalsWidget: React.FC<SavingsProps> = ({
+  onOpenGoalsTab,
+}) => {
   const { theme } = useAppTheme();
   const { goals, updateGoalAmount, formatMoney, currencyCode } = useData();
 
-  const isUSD = currencyCode === 'USD';
+  const isUSD = currencyCode === "USD";
   const quickDepositAmount = isUSD ? 10 : 50000;
 
   const handleDeposit = async (goalId: string) => {
@@ -33,18 +35,24 @@ export const SavingsGoalsWidget: React.FC<SavingsProps> = ({ onOpenGoalsTab }) =
     <Card style={styles.card}>
       <View style={styles.topRow}>
         <View style={styles.titleWrap}>
-          <Ionicons name="trophy-outline" size={16} color={theme.colors.accent} />
+          <Ionicons
+            name="trophy-outline"
+            size={16}
+            color={theme.colors.accent}
+          />
           <Text
             numberOfLines={1}
             ellipsizeMode="tail"
             style={[styles.title, { color: theme.colors.textSecondary }]}
           >
-            STUDENT SAVINGS GOALS
+            SAVINGS GOALS
           </Text>
         </View>
 
         <TouchableOpacity onPress={onOpenGoalsTab} style={{ flexShrink: 0 }}>
-          <Text style={[styles.viewAll, { color: theme.colors.primary }]}>View All →</Text>
+          <Text style={[styles.viewAll, { color: theme.colors.primary }]}>
+            View All →
+          </Text>
         </TouchableOpacity>
       </View>
 
@@ -57,7 +65,9 @@ export const SavingsGoalsWidget: React.FC<SavingsProps> = ({ onOpenGoalsTab }) =
           {topGoals.map((goal) => {
             const percent = Math.min(
               100,
-              Math.round(((goal.currentAmount || 0) / (goal.targetAmount || 1)) * 100)
+              Math.round(
+                ((goal.currentAmount || 0) / (goal.targetAmount || 1)) * 100,
+              ),
             );
             const isCompleted = percent >= 100;
 
@@ -68,7 +78,7 @@ export const SavingsGoalsWidget: React.FC<SavingsProps> = ({ onOpenGoalsTab }) =
                   styles.goalItem,
                   {
                     backgroundColor: theme.colors.surfaceSubtle,
-                    borderColor: isCompleted ? '#FFD700' : theme.colors.border,
+                    borderColor: isCompleted ? "#FFD700" : theme.colors.border,
                     borderWidth: isCompleted ? 1.5 : 1,
                     borderRadius: Math.min(theme.borderRadius, 14),
                   },
@@ -77,7 +87,11 @@ export const SavingsGoalsWidget: React.FC<SavingsProps> = ({ onOpenGoalsTab }) =
                 <View style={styles.goalInfoRow}>
                   <View style={styles.goalLeft}>
                     <Text style={styles.goalIcon}>
-                      {isCompleted ? '🎉' : goal.icon === 'musical-notes' ? '🎸' : '💻'}
+                      {isCompleted
+                        ? "🎉"
+                        : goal.icon === "musical-notes"
+                          ? "🎸"
+                          : "💻"}
                     </Text>
                     <View style={{ flex: 1, marginRight: 6 }}>
                       <Text
@@ -87,8 +101,14 @@ export const SavingsGoalsWidget: React.FC<SavingsProps> = ({ onOpenGoalsTab }) =
                       >
                         {goal.title}
                       </Text>
-                      <Text style={[styles.goalAmounts, { color: theme.colors.textMuted }]}>
-                        {formatMoney(goal.currentAmount || 0)} / {formatMoney(goal.targetAmount)}
+                      <Text
+                        style={[
+                          styles.goalAmounts,
+                          { color: theme.colors.textMuted },
+                        ]}
+                      >
+                        {formatMoney(goal.currentAmount || 0)} /{" "}
+                        {formatMoney(goal.targetAmount)}
                       </Text>
                     </View>
                   </View>
@@ -107,7 +127,7 @@ export const SavingsGoalsWidget: React.FC<SavingsProps> = ({ onOpenGoalsTab }) =
                           { color: theme.colors.primary },
                         ]}
                       >
-                        +{isUSD ? '$10' : '50k'}
+                        +{isUSD ? "$10" : "50k"}
                       </Text>
                     </TouchableOpacity>
                   )}
@@ -120,7 +140,9 @@ export const SavingsGoalsWidget: React.FC<SavingsProps> = ({ onOpenGoalsTab }) =
                       styles.progressBar,
                       {
                         width: `${percent}%`,
-                        backgroundColor: isCompleted ? '#FFD700' : goal.color || theme.colors.accent,
+                        backgroundColor: isCompleted
+                          ? "#FFD700"
+                          : goal.color || theme.colors.accent,
                         borderRadius: 3,
                       },
                     ]}
@@ -128,7 +150,12 @@ export const SavingsGoalsWidget: React.FC<SavingsProps> = ({ onOpenGoalsTab }) =
                 </View>
 
                 <View style={styles.progressPercentRow}>
-                  <Text style={[styles.percentText, { color: theme.colors.textSecondary }]}>
+                  <Text
+                    style={[
+                      styles.percentText,
+                      { color: theme.colors.textSecondary },
+                    ]}
+                  >
                     {percent}% funded
                   </Text>
                   {isCompleted && (
@@ -146,17 +173,20 @@ export const SavingsGoalsWidget: React.FC<SavingsProps> = ({ onOpenGoalsTab }) =
 
 const styles = StyleSheet.create({
   card: {
+    flex: 1,
+    height: "100%",
     padding: 14,
+    justifyContent: "space-between",
   },
   topRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 10,
   },
   titleWrap: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 6,
     flex: 1,
     flexShrink: 1,
@@ -164,17 +194,17 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 10,
-    fontWeight: '700',
+    fontWeight: "700",
     letterSpacing: 0.5,
     flexShrink: 1,
   },
   viewAll: {
     fontSize: 12,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   emptyText: {
     fontSize: 12,
-    fontStyle: 'italic',
+    fontStyle: "italic",
     paddingVertical: 10,
   },
   goalsList: {
@@ -184,14 +214,14 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   goalInfoRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 8,
   },
   goalLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
     flex: 1,
   },
@@ -200,7 +230,7 @@ const styles = StyleSheet.create({
   },
   goalTitle: {
     fontSize: 13,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   goalAmounts: {
     fontSize: 11,
@@ -213,29 +243,29 @@ const styles = StyleSheet.create({
   },
   quickAddBtnText: {
     fontSize: 11,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   progressTrack: {
     height: 6,
-    backgroundColor: 'rgba(0,0,0,0.06)',
+    backgroundColor: "rgba(0,0,0,0.06)",
     borderRadius: 3,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   progressBar: {
-    height: '100%',
+    height: "100%",
   },
   progressPercentRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginTop: 4,
   },
   percentText: {
     fontSize: 10,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   completedBadge: {
     fontSize: 10,
-    fontWeight: '800',
-    color: '#D97706',
+    fontWeight: "800",
+    color: "#D97706",
   },
 });

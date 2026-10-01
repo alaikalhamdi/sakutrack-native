@@ -1,17 +1,19 @@
-import { Ionicons } from '@expo/vector-icons';
-import React from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
-import { useData } from '../../context/DataContext';
-import { useAppTheme } from '../../context/ThemeContext';
-import { Text } from '../common/AppText';
-import { Badge } from '../common/Badge';
-import { Card } from '../common/Card';
+import { Ionicons } from "@expo/vector-icons";
+import React from "react";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { useData } from "../../context/DataContext";
+import { useAppTheme } from "../../context/ThemeContext";
+import { Text } from "../common/AppText";
+import { Badge } from "../common/Badge";
+import { Card } from "../common/Card";
 
 interface RunwayWidgetProps {
   onOpenCycleModal?: () => void;
 }
 
-export const RunwayWidget: React.FC<RunwayWidgetProps> = ({ onOpenCycleModal }) => {
+export const RunwayWidget: React.FC<RunwayWidgetProps> = ({
+  onOpenCycleModal,
+}) => {
   const { theme } = useAppTheme();
   const { cycle, predictiveInsights, formatMoney } = useData();
 
@@ -28,19 +30,27 @@ export const RunwayWidget: React.FC<RunwayWidgetProps> = ({ onOpenCycleModal }) 
       <Card style={styles.card}>
         <View style={styles.headerRow}>
           <View style={styles.titleWrap}>
-            <Ionicons name="speedometer-outline" size={16} color={theme.colors.accent} />
+            <Ionicons
+              name="speedometer-outline"
+              size={16}
+              color={theme.colors.accent}
+            />
             <Text
               numberOfLines={1}
               ellipsizeMode="tail"
               style={[styles.title, { color: theme.colors.textSecondary }]}
             >
-              ALLOWANCE RUNWAY & BROKE-METER
+              ALLOWANCE RUNWAY
             </Text>
           </View>
         </View>
 
         <View style={styles.emptyContainer}>
-          <Ionicons name="wallet-outline" size={32} color={theme.colors.accent} />
+          <Ionicons
+            name="wallet-outline"
+            size={32}
+            color={theme.colors.accent}
+          />
           <Text
             style={[
               styles.emptyTitle,
@@ -49,15 +59,23 @@ export const RunwayWidget: React.FC<RunwayWidgetProps> = ({ onOpenCycleModal }) 
           >
             No Allowance Budget Set
           </Text>
-          <Text style={[styles.emptySubtitle, { color: theme.colors.textSecondary }]}>
-            Set your weekly or monthly pocket money to activate the broke-meter and daily
-            safe-to-spend forecast.
+          <Text
+            style={[
+              styles.emptySubtitle,
+              { color: theme.colors.textSecondary },
+            ]}
+          >
+            Set your weekly or monthly pocket money to activate the broke-meter
+            and daily safe-to-spend forecast.
           </Text>
 
           {onOpenCycleModal && (
             <TouchableOpacity
               onPress={onOpenCycleModal}
-              style={[styles.setupBtn, { backgroundColor: theme.colors.primary }]}
+              style={[
+                styles.setupBtn,
+                { backgroundColor: theme.colors.primary },
+              ]}
             >
               <Ionicons name="add-circle-outline" size={16} color="#FFF" />
               <Text style={styles.setupBtnText}>Set Allowance Plan</Text>
@@ -71,7 +89,7 @@ export const RunwayWidget: React.FC<RunwayWidgetProps> = ({ onOpenCycleModal }) 
   const totalCycleAmount = cycle?.amount || 1;
   const percentRemaining = Math.max(
     0,
-    Math.min(100, (remainingAllowance / totalCycleAmount) * 100)
+    Math.min(100, (remainingAllowance / totalCycleAmount) * 100),
   );
 
   return (
@@ -79,13 +97,17 @@ export const RunwayWidget: React.FC<RunwayWidgetProps> = ({ onOpenCycleModal }) 
       {/* Header Row */}
       <View style={styles.headerRow}>
         <View style={styles.titleWrap}>
-          <Ionicons name="speedometer-outline" size={16} color={theme.colors.accent} />
+          <Ionicons
+            name="speedometer-outline"
+            size={16}
+            color={theme.colors.accent}
+          />
           <Text
             numberOfLines={1}
             ellipsizeMode="tail"
             style={[styles.title, { color: theme.colors.textSecondary }]}
           >
-            ALLOWANCE RUNWAY & BROKE-METER
+            ALLOWANCE RUNWAY
           </Text>
         </View>
 
@@ -103,9 +125,16 @@ export const RunwayWidget: React.FC<RunwayWidgetProps> = ({ onOpenCycleModal }) 
             <TouchableOpacity
               onPress={onOpenCycleModal}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-              style={[styles.editIconBtn, { backgroundColor: theme.colors.surfaceSubtle }]}
+              style={[
+                styles.editIconBtn,
+                { backgroundColor: theme.colors.surfaceSubtle },
+              ]}
             >
-              <Ionicons name="pencil" size={12} color={theme.colors.textSecondary} />
+              <Ionicons
+                name="pencil"
+                size={12}
+                color={theme.colors.textSecondary}
+              />
             </TouchableOpacity>
           )}
         </View>
@@ -141,12 +170,15 @@ export const RunwayWidget: React.FC<RunwayWidgetProps> = ({ onOpenCycleModal }) 
               style={[
                 styles.runwayDays,
                 {
-                  color: isBurnoutEarly ? theme.colors.danger : theme.colors.success,
+                  color: isBurnoutEarly
+                    ? theme.colors.danger
+                    : theme.colors.success,
                   fontFamily: theme.fonts?.bold,
                 },
               ]}
             >
-              {projectedRunwayDays} {projectedRunwayDays === 1 ? 'day' : 'days'} left
+              {projectedRunwayDays} {projectedRunwayDays === 1 ? "day" : "days"}{" "}
+              left
             </Text>
           </View>
         </View>
@@ -169,19 +201,24 @@ export const RunwayWidget: React.FC<RunwayWidgetProps> = ({ onOpenCycleModal }) 
                   percentRemaining < 20
                     ? theme.colors.danger
                     : percentRemaining < 50
-                    ? theme.colors.warning
-                    : theme.colors.primary,
+                      ? theme.colors.warning
+                      : theme.colors.primary,
                 borderRadius: theme.borderRadius,
               },
             ]}
           />
         </View>
         <View style={styles.progressLabels}>
-          <Text style={[styles.progressNote, { color: theme.colors.textMuted }]}>
+          <Text
+            style={[styles.progressNote, { color: theme.colors.textMuted }]}
+          >
             {percentRemaining.toFixed(0)}% of saku available
           </Text>
-          <Text style={[styles.progressNote, { color: theme.colors.textMuted }]}>
-            {daysRemainingInCycle} {daysRemainingInCycle === 1 ? 'day' : 'days'} left in cycle
+          <Text
+            style={[styles.progressNote, { color: theme.colors.textMuted }]}
+          >
+            {daysRemainingInCycle} {daysRemainingInCycle === 1 ? "day" : "days"}{" "}
+            left in cycle
           </Text>
         </View>
       </View>
@@ -207,31 +244,34 @@ export const RunwayWidget: React.FC<RunwayWidgetProps> = ({ onOpenCycleModal }) 
 
 const styles = StyleSheet.create({
   card: {
-    padding: 16,
+    flex: 1,
+    height: "100%",
+    padding: 14,
+    justifyContent: "space-between",
   },
   headerRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 10,
     gap: 8,
   },
   titleWrap: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 6,
     flex: 1,
     flexShrink: 1,
   },
   title: {
     fontSize: 10,
-    fontWeight: '700',
+    fontWeight: "700",
     letterSpacing: 0.5,
     flexShrink: 1,
   },
   headerRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 6,
     flexShrink: 0,
   },
@@ -239,29 +279,29 @@ const styles = StyleSheet.create({
     width: 22,
     height: 22,
     borderRadius: 11,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   emptyContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingVertical: 14,
     gap: 6,
   },
   emptyTitle: {
     fontSize: 15,
-    fontWeight: '700',
+    fontWeight: "700",
     marginTop: 4,
   },
   emptySubtitle: {
     fontSize: 12,
-    textAlign: 'center',
+    textAlign: "center",
     lineHeight: 16,
     paddingHorizontal: 12,
     marginBottom: 6,
   },
   setupBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 6,
     paddingHorizontal: 14,
     paddingVertical: 8,
@@ -269,28 +309,28 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   setupBtnText: {
-    color: '#FFF',
+    color: "#FFF",
     fontSize: 12,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   numbersRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'baseline',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "baseline",
     marginBottom: 12,
     gap: 8,
   },
   metaLabel: {
     fontSize: 11,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   remainingAmount: {
     fontSize: 24,
-    fontWeight: '800',
+    fontWeight: "800",
     marginTop: 2,
   },
   rightStat: {
-    alignItems: 'flex-end',
+    alignItems: "flex-end",
     flexShrink: 0,
   },
   runwayTag: {
@@ -298,7 +338,7 @@ const styles = StyleSheet.create({
   },
   runwayDays: {
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   progressWrap: {
     marginBottom: 10,
@@ -306,14 +346,14 @@ const styles = StyleSheet.create({
   progressBarBg: {
     height: 8,
     borderRadius: 4,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   progressBarFill: {
-    height: '100%',
+    height: "100%",
   },
   progressLabels: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginTop: 4,
   },
   progressNote: {

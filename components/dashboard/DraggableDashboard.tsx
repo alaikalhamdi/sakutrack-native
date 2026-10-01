@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Animated,
   Dimensions,
@@ -15,9 +15,11 @@ import { useAppTheme } from '../../context/ThemeContext';
 import { Text } from '../common/AppText';
 import {
   DashboardWidgetConfig,
+  EDIT_HEADER_HEIGHT,
   WidgetSlotSize,
   WidgetType,
   getAllowedSizes,
+  getWidgetSlotHeight,
 } from '../../types/dashboard';
 import { CategoryDonutWidget } from './CategoryDonutWidget';
 import { QuickAddLauncherWidget } from './QuickAddLauncherWidget';
@@ -47,7 +49,7 @@ interface DraggableDashboardProps {
 
 /**
  * Striped Outline Drop Indicator
- * Shown at the destination slot while dragging to indicate where the card will land.
+ * Shown at the freed destination slot to indicate where the card will land.
  */
 const StripedDropPlaceholder: React.FC<{
   width: number | string;
@@ -61,14 +63,14 @@ const StripedDropPlaceholder: React.FC<{
         styles.dropPlaceholder,
         {
           width: width as any,
-          height: Math.max(90, height),
+          height: height,
           borderColor: theme.colors.primary,
           backgroundColor: theme.isDark ? 'rgba(59, 130, 246, 0.16)' : 'rgba(37, 99, 235, 0.10)',
           borderRadius: Math.min(theme.borderRadius, 14),
         },
       ]}
     >
-      <View style={[styles.stripedInnerBox, { borderColor: theme.colors.primary + '50' }]}>
+      <View style={[styles.stripedInnerBox, { borderColor: theme.colors.primary + '60' }]}>
         <View
           style={[
             styles.placeholderIconCircle,
@@ -92,10 +94,12 @@ interface WidgetCardItemProps {
   w: DashboardWidgetConfig;
   isEditMode: boolean;
   isThisDragging: boolean;
-  isDropTarget: boolean;
   pan: Animated.ValueXY;
+  targetOffset: { x: number; y: number };
   theme: ThemeConfig;
   width: number | string;
+  height: number;
+  baseCardHeight: number;
   canDownsize: boolean;
   canUpsize: boolean;
   onLayout: (e: LayoutChangeEvent) => void;
@@ -112,10 +116,12 @@ const WidgetCardItem: React.FC<WidgetCardItemProps> = ({
   w,
   isEditMode,
   isThisDragging,
-  isDropTarget,
   pan,
+  targetOffset,
   theme,
   width,
+  height,
+  baseCardHeight,
   canDownsize,
   canUpsize,
   onLayout,
@@ -127,6 +133,23 @@ const WidgetCardItem: React.FC<WidgetCardItemProps> = ({
   onHide,
   renderContent,
 }) => {
+  // Smooth spring shift animation when cards move out of the way for reordering
+  const [shiftAnim] = useState(() => new Animated.ValueXY({ x: 0, y: 0 }));
+
+  useEffect(() => {
+    if (isThisDragging) {
+      shiftAnim.setValue({ x: 0, y: 0 });
+      return;
+    }
+    Animated.spring(shiftAnim, {
+      toValue: targetOffset,
+      friction: 9,
+      tension: 80,
+      useNativeDriver: true,
+    }).start();
+  }, [targetOffset, isThisDragging, shiftAnim]);
+
+  // Stable PanResponder: callbacks have stable references during drag so PanResponder is never recreated
   const panResponder = useMemo(() => {
     return PanResponder.create({
       onStartShouldSetPanResponder: () => isEditMode,
@@ -154,62 +177,42 @@ const WidgetCardItem: React.FC<WidgetCardItemProps> = ({
     });
   }, [isEditMode, w, onStartDrag, onMoveDrag, onEndDrag]);
 
+  let transformStyle: any[] = [];
+  if (isThisDragging) {
+    transformStyle = [
+      ...pan.getTranslateTransform(),
+      { scale: 1.04 },
+    ];
+  } else {
+    transformStyle = shiftAnim.getTranslateTransform();
+  }
+
   return (
     <View
       style={[
         styles.cardWrapper,
         {
           width: width as any,
+          height: height,
           zIndex: isThisDragging ? 9999 : 1,
           elevation: isThisDragging ? 24 : 1,
         },
       ]}
       onLayout={onLayout}
     >
-      {/* Ghost slot visible under the lifted card when dragging */}
-      {isThisDragging && (
-        <View
-          style={[
-            styles.ghostSlot,
-            {
-              backgroundColor: theme.colors.surfaceSubtle,
-              borderColor: theme.colors.primary + '60',
-              borderRadius: theme.borderRadius,
-            },
-          ]}
-        >
-          <View style={styles.ghostContent}>
-            <View
-              style={[
-                styles.ghostIconCircle,
-                { backgroundColor: theme.colors.primary + '20' },
-              ]}
-            >
-              <Ionicons name="move" size={18} color={theme.colors.primary} />
-            </View>
-            <Text style={[styles.ghostTitle, { color: theme.colors.textMuted }]}>
-              Moving card...
-            </Text>
-          </View>
-        </View>
-      )}
-
       {isEditMode ? (
         <Animated.View
           style={[
             styles.windowFrame,
             {
+              height: height,
               backgroundColor: theme.colors.surface,
               borderColor: isThisDragging ? theme.colors.primary : theme.colors.border,
               borderWidth: isThisDragging ? 2 : (theme.borderWidth > 0 ? 1 : 0.8),
               borderRadius: theme.borderRadius,
-              opacity: isDropTarget ? 0.35 : 1,
+              transform: transformStyle,
             },
             isThisDragging && {
-              transform: [
-                ...pan.getTranslateTransform(),
-                { scale: 1.04 },
-              ],
               shadowColor: theme.colors.primary,
               shadowOffset: { width: 0, height: 10 },
               shadowOpacity: 0.35,
@@ -219,19 +222,7 @@ const WidgetCardItem: React.FC<WidgetCardItemProps> = ({
           ]}
         >
           {/* Grip Holder / Window Titlebar */}
-          <View
-            style={[
-              styles.windowTitleBar,
-              {
-                backgroundColor: isThisDragging
-                  ? theme.colors.primaryLight
-                  : theme.colors.surfaceSubtle,
-                borderBottomColor: isThisDragging
-                  ? theme.colors.primary
-                  : theme.colors.border,
-              },
-            ]}
-          >
+          <View style={styles.windowTitleBar}>
             {/* Grip Handle Area */}
             <View
               {...panResponder.panHandlers}
@@ -349,13 +340,13 @@ const WidgetCardItem: React.FC<WidgetCardItemProps> = ({
             </View>
           </View>
 
-          {/* Window Body (Disabled clicks in edit mode to prevent unintended actions) */}
-          <View pointerEvents="none" style={styles.windowBody}>
+          {/* Window Body: maintains full baseCardHeight so content is never squeezed */}
+          <View pointerEvents="none" style={[styles.windowBody, { height: baseCardHeight }]}>
             {renderContent(w.type)}
           </View>
         </Animated.View>
       ) : (
-        <View style={{ width: '100%' }}>
+        <View style={{ width: '100%', height: height }}>
           {renderContent(w.type)}
         </View>
       )}
@@ -411,6 +402,7 @@ export const DraggableDashboard: React.FC<DraggableDashboardProps> = ({
   // Dragging state
   const [draggingWidgetId, setDraggingWidgetId] = useState<string | null>(null);
   const [currentDropIndex, setCurrentDropIndex] = useState<number>(-1);
+  const currentDropIndexRef = useRef(-1);
 
   // Animated delta for active card translation
   const [pan] = useState(() => new Animated.ValueXY({ x: 0, y: 0 }));
@@ -508,6 +500,7 @@ export const DraggableDashboard: React.FC<DraggableDashboardProps> = ({
     const initialIdx = visibleWidgets.findIndex((item) => item.id === w.id);
     setDraggingWidgetId(w.id);
     setCurrentDropIndex(initialIdx);
+    currentDropIndexRef.current = initialIdx;
     pan.setValue({ x: 0, y: 0 });
 
     onDragStart?.();
@@ -519,6 +512,7 @@ export const DraggableDashboard: React.FC<DraggableDashboardProps> = ({
     }
   }, [isEditMode, visibleWidgets, pan, onDragStart]);
 
+  // onMoveDrag has completely stable dependencies so PanResponder is never disrupted mid-drag
   const onMoveDrag = useCallback((dx: number, dy: number, startWidgetId: string) => {
     pan.setValue({ x: dx, y: dy });
 
@@ -526,45 +520,103 @@ export const DraggableDashboard: React.FC<DraggableDashboardProps> = ({
     if (!startLayout) return;
 
     const newDropIdx = calculateDropIndex(dx, dy, startLayout);
-    if (newDropIdx >= 0 && newDropIdx !== currentDropIndex) {
-      setCurrentDropIndex(newDropIdx);
-      try {
-        Haptics.selectionAsync();
-      } catch {
-        // ignore
-      }
+    if (newDropIdx >= 0) {
+      currentDropIndexRef.current = newDropIdx;
+      setCurrentDropIndex((prev) => {
+        if (prev !== newDropIdx) {
+          try {
+            Haptics.selectionAsync();
+          } catch {
+            // ignore
+          }
+          return newDropIdx;
+        }
+        return prev;
+      });
     }
-  }, [pan, itemLayouts, calculateDropIndex, currentDropIndex]);
+  }, [pan, itemLayouts, calculateDropIndex]);
 
+  // Drop handler: Reorders widgets using arrayMove (splice) and correctly updates order indices
   const onEndDrag = useCallback(() => {
     onDragEnd?.();
 
-    if (draggingWidgetId && currentDropIndex >= 0 && currentDropIndex < visibleWidgets.length) {
-      const fromIdx = visibleWidgets.findIndex((item) => item.id === draggingWidgetId);
-      if (fromIdx !== -1 && fromIdx !== currentDropIndex) {
-        const reordered = [...visibleWidgets];
-        const [moved] = reordered.splice(fromIdx, 1);
-        reordered.splice(currentDropIndex, 0, moved);
+    const fromIdx = visibleWidgets.findIndex((item) => item.id === draggingWidgetId);
+    const targetIdx = currentDropIndexRef.current;
 
-        const updatedFull = widgets.map((item) => {
-          const matchIdx = reordered.findIndex((rw) => rw.id === item.id);
-          return matchIdx !== -1 ? { ...item, order: matchIdx } : item;
-        });
+    if (fromIdx !== -1 && targetIdx !== -1 && fromIdx !== targetIdx) {
+      // Reorder using standard array move (splice): shifts items between fromIdx and targetIdx
+      const reordered = [...visibleWidgets];
+      const [moved] = reordered.splice(fromIdx, 1);
+      reordered.splice(targetIdx, 0, moved);
 
-        reorderWidgets(updatedFull);
+      // Reconstruct the full widgets list maintaining the new order for visible widgets
+      const hiddenWidgets = widgets.filter((w) => !w.isVisible);
+      const updatedFull = [...reordered, ...hiddenWidgets].map((w, idx) => ({
+        ...w,
+        order: idx,
+      }));
 
-        try {
-          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        } catch {
-          // ignore
-        }
+      reorderWidgets(updatedFull);
+
+      try {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      } catch {
+        // ignore
       }
     }
 
     setDraggingWidgetId(null);
     setCurrentDropIndex(-1);
+    currentDropIndexRef.current = -1;
     pan.setValue({ x: 0, y: 0 });
-  }, [onDragEnd, draggingWidgetId, currentDropIndex, visibleWidgets, widgets, reorderWidgets, pan]);
+  }, [onDragEnd, draggingWidgetId, visibleWidgets, widgets, reorderWidgets, pan]);
+
+  // Calculate the shift offset for each card in the grid to make room for the dragged card
+  const getTargetOffset = useCallback((index: number) => {
+    if (
+      !draggingWidgetId ||
+      currentDropIndex === -1 ||
+      currentDropIndex === draggingIndex ||
+      draggingIndex === -1
+    ) {
+      return { x: 0, y: 0 };
+    }
+
+    // Dragged card itself is moved by pan, not targetOffset
+    if (index === draggingIndex) {
+      return { x: 0, y: 0 };
+    }
+
+    // Dragging downwards: cards between draggingIndex < index <= currentDropIndex shift UP to index - 1
+    if (draggingIndex < currentDropIndex) {
+      if (index > draggingIndex && index <= currentDropIndex) {
+        const targetSlot = itemLayouts[visibleWidgets[index - 1]?.id];
+        const currentSlot = itemLayouts[visibleWidgets[index]?.id];
+        if (targetSlot && currentSlot) {
+          return {
+            x: targetSlot.x - currentSlot.x,
+            y: targetSlot.y - currentSlot.y,
+          };
+        }
+      }
+    }
+
+    // Dragging upwards: cards between currentDropIndex <= index < draggingIndex shift DOWN to index + 1
+    if (draggingIndex > currentDropIndex) {
+      if (index >= currentDropIndex && index < draggingIndex) {
+        const targetSlot = itemLayouts[visibleWidgets[index + 1]?.id];
+        const currentSlot = itemLayouts[visibleWidgets[index]?.id];
+        if (targetSlot && currentSlot) {
+          return {
+            x: targetSlot.x - currentSlot.x,
+            y: targetSlot.y - currentSlot.y,
+          };
+        }
+      }
+    }
+
+    return { x: 0, y: 0 };
+  }, [draggingWidgetId, currentDropIndex, draggingIndex, visibleWidgets, itemLayouts]);
 
   const renderWidgetContent = useCallback((type: WidgetType) => {
     switch (type) {
@@ -593,15 +645,15 @@ export const DraggableDashboard: React.FC<DraggableDashboardProps> = ({
     }
   }, [onOpenCycleModal, onOpenAddExpense, onOpenGoalsTab, onOpenExpensesTab, onEditExpense]);
 
-  const targetWidget = currentDropIndex >= 0 && currentDropIndex < visibleWidgets.length
+  const freedSlotWidget = currentDropIndex >= 0 && currentDropIndex < visibleWidgets.length
     ? visibleWidgets[currentDropIndex]
     : null;
-  const targetLayout = targetWidget ? itemLayouts[targetWidget.id] : null;
+  const freedSlotLayout = freedSlotWidget ? itemLayouts[freedSlotWidget.id] : null;
   const isDropIndicatorVisible = Boolean(
     draggingWidgetId &&
     currentDropIndex !== -1 &&
     currentDropIndex !== draggingIndex &&
-    targetLayout
+    freedSlotLayout
   );
 
   return (
@@ -621,12 +673,14 @@ export const DraggableDashboard: React.FC<DraggableDashboardProps> = ({
       >
         {visibleWidgets.map((w, index) => {
           const isThisDragging = draggingWidgetId === w.id;
-          const isDropTarget = currentDropIndex === index && currentDropIndex !== draggingIndex;
           const is1x1 = w.slotSize === '1x1';
           const allowed = getAllowedSizes(w.type);
           const currIdx = allowed.indexOf(w.slotSize);
           const canDownsize = currIdx > 0;
           const canUpsize = currIdx >= 0 && currIdx < allowed.length - 1;
+          const targetOffset = getTargetOffset(index);
+          const cardHeight = getWidgetSlotHeight(w.slotSize, isEditMode);
+          const baseCardHeight = getWidgetSlotHeight(w.slotSize, false);
 
           return (
             <WidgetCardItem
@@ -634,10 +688,12 @@ export const DraggableDashboard: React.FC<DraggableDashboardProps> = ({
               w={w}
               isEditMode={isEditMode}
               isThisDragging={isThisDragging}
-              isDropTarget={isDropTarget}
               pan={pan}
+              targetOffset={targetOffset}
               theme={theme}
               width={is1x1 ? halfWidth : '100%'}
+              height={cardHeight}
+              baseCardHeight={baseCardHeight}
               canDownsize={canDownsize}
               canUpsize={canUpsize}
               onLayout={(e: LayoutChangeEvent) => {
@@ -654,23 +710,23 @@ export const DraggableDashboard: React.FC<DraggableDashboardProps> = ({
           );
         })}
 
-        {/* Drop Target Indicator Overlay */}
-        {isDropIndicatorVisible && targetWidget && targetLayout && (
+        {/* Drop Target Indicator Overlay (Vacated slot with striped outline) */}
+        {isDropIndicatorVisible && freedSlotWidget && freedSlotLayout && (
           <View
             pointerEvents="none"
             style={[
               styles.dropIndicatorOverlay,
               {
-                left: targetLayout.x,
-                top: targetLayout.y,
-                width: targetLayout.width,
-                height: targetLayout.height,
+                left: freedSlotLayout.x,
+                top: freedSlotLayout.y,
+                width: freedSlotLayout.width,
+                height: freedSlotLayout.height,
               },
             ]}
           >
             <StripedDropPlaceholder
               width="100%"
-              height={targetLayout.height}
+              height={freedSlotLayout.height}
               slotSize={draggingWidget?.slotSize || '2x1'}
               theme={theme}
             />
@@ -697,40 +753,10 @@ const styles = StyleSheet.create({
   cardWrapper: {
     position: 'relative',
   },
-  ghostSlot: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    borderWidth: 1.5,
-    borderStyle: 'dashed',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 12,
-  },
-  ghostContent: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 4,
-  },
-  ghostIconCircle: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 2,
-  },
-  ghostTitle: {
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 0.2,
-  },
   dropIndicatorOverlay: {
     position: 'absolute',
-    zIndex: 9000,
-    elevation: 16,
+    zIndex: 500,
+    elevation: 8,
   },
   windowFrame: {
     overflow: 'hidden',
@@ -740,11 +766,11 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   windowTitleBar: {
+    height: EDIT_HEADER_HEIGHT,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 8,
-    paddingVertical: 6,
     borderBottomWidth: 1,
   },
   gripHandleArea: {

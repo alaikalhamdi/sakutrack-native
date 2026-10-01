@@ -99,7 +99,9 @@ export const CategoryDonutWidget: React.FC = () => {
 
 const styles = StyleSheet.create({
   card: {
-    padding: 16,
+    flex: 1,
+    height: '100%',
+    padding: 14,
   },
   topRow: {
     flexDirection: 'row',

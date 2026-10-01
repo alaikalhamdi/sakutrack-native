@@ -100,7 +100,10 @@ export const QuickAddLauncherWidget: React.FC<QuickAddProps> = ({ onOpenFullModa
 
 const styles = StyleSheet.create({
   card: {
+    flex: 1,
+    height: '100%',
     padding: 14,
+    justifyContent: 'space-between',
   },
   topRow: {
     flexDirection: 'row',
